@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Dashboard</title>
+  <style>
+    body {
+      background: #f1f2f6;
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    .sidebar {
+      width: 220px;
+      background: #2f3542;
+      color: white;
+      padding: 20px;
+    }
+    .sidebar h2 {
+      color: #1e90ff;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .sidebar nav a {
+      display: block;
+      margin: 10px 0;
+      color: white;
+      text-decoration: none;
+      padding: 10px;
+      border-radius: 5px;
+    }
+    .sidebar nav a:hover {
+      background: #57606f;
+    }
+    .main {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+    }
+    .dashboard-title {
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+    }
+    .user {
+      border-left: 4px solid #1e90ff;
+      padding: 10px;
+      margin-bottom: 10px;
+      background: #f9f9f9;
+      border-radius: 5px;
+    }
+    .user button {
+      background: #1e90ff;
+      color: white;
+      border: none;
+      padding: 6px 10px;
+      margin-top: 6px;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+    .user button:disabled {
+      background: gray;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="sidebar">
+    <h2>Admin Panel</h2>
+    <nav>
+      <a href="#">Dashboard</a>
+      <a href="#">Users</a>
+    </nav>
+  </div>
+
+  <div class="main">
+    <h1 class="dashboard-title">Welcome Admin 👋</h1>
+
+    <div class="card">
+      <h3>Confirm New Users</h3>
+      <div id="userList">
+        <p>Loading users...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase (compat version) -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-firestore-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDqs938UtvScxCz_p2eANLJuVbTjHZKPoI",
+      authDomain: "bitcoin-site-8b190.firebaseapp.com",
+      projectId: "bitcoin-site-8b190",
+      storageBucket: "bitcoin-site-8b190.appspot.com",
+      messagingSenderId: "548765450635",
+      appId: "1:548765450635:web:3a21f3fefefb117207ef8e"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const userList = document.getElementById("userList");
+
+    async function loadUsers() {
+      try {
+        const snapshot = await db.collection("users").orderBy("timestamp", "desc").get();
+        userList.innerHTML = "";
+
+        if (snapshot.empty) {
+          userList.innerHTML = "<p>No users found.</p>";
+          return;
+        }
+
+        snapshot.forEach(doc => {
+          const user = doc.data();
+          const div = document.createElement("div");
+          div.className = "user";
+
+          div.innerHTML = `
+            <strong>${user.name}</strong><br>
+            Email: ${user.email}<br>
+            Status: <b>${user.confirmed ? "Confirmed ✅" : "Pending ⏳"}</b><br>
+            <button onclick="confirmUser('${doc.id}', this)" ${user.confirmed ? "disabled" : ""}>
+              ${user.confirmed ? "Confirmed" : "Confirm"}
+            </button>
+          `;
+
+          userList.appendChild(div);
+        });
+      } catch (err) {
+        userList.innerHTML = "<p>Error loading users.</p>";
+        console.error(err);
+      }
+    }
+
+    async function confirmUser(userId, button) {
+      try {
+        await db.collection("users").doc(userId).update({ confirmed: true });
+        button.textContent = "Confirmed";
+        button.disabled = true;
+        alert("User has been confirmed!");
+      } catch (err) {
+        console.error("Error confirming user:", err);
+        alert("Failed to confirm user.");
+      }
+    }
+
+    // Load users on page load
+    loadUsers();
+  </script>
+</body>
+</html>

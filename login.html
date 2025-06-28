@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Login - Bayya Bitcoin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  <!-- Favicon & Logo CSS -->
+  <link rel="shortcut icon" href="images/favicon.png">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+  <style>
+    body {
+      background-color: #0c0c0c;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    .login-box {
+      background-color: #1e1e1e;
+      padding: 40px;
+      border-radius: 10px;
+      width: 100%;
+      max-width: 450px;
+      box-shadow: 0 0 20px rgba(255, 165, 0, 0.3);
+    }
+
+    .logo {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    .logo img {
+      width: 150px;
+    }
+
+    h2 {
+      text-align: center;
+      color: orange;
+      margin-bottom: 25px;
+    }
+
+    .form-control {
+      background-color: #2e2e2e;
+      color: white;
+      border: none;
+    }
+
+    .form-control::placeholder {
+      color: #aaa;
+    }
+
+    .btn-primary {
+      background-color: orange;
+      border: none;
+    }
+
+    .btn-primary:hover {
+      background-color: #e69500;
+    }
+
+    .text-small {
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    a {
+      color: orange;
+    }
+
+    .btn-back {
+      background: transparent;
+      border: none;
+      color: orange;
+      cursor: pointer;
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+    .btn-back:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="login-box">
+    <button class="btn-back" onclick="history.back()">← Back</button>
+    <div class="logo">
+      <img src="images/logo-dark.png" alt="Bayya Logo">
+    </div>
+    <h2>Login</h2>
+    <form id="loginForm">
+      <div class="form-group">
+        <input type="email" id="email" class="form-control" placeholder="Email Address" required />
+      </div>
+      <div class="form-group">
+        <input type="password" id="password" class="form-control" placeholder="Password" required />
+      </div>
+      <button type="submit" class="btn btn-primary btn-block">Login</button>
+      <p class="text-small">Don't have an account? <a href="register.html">Register</a></p>
+    </form>
+  </div>
+
+  <!-- Firebase (Compat version) -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-firestore-compat.js"></script>
+
+  <script>
+    // Firebase Configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyDqs938UtvScxCz_p2eANLJuVbTjHZKPoI",
+      authDomain: "bitcoin-site-8b190.firebaseapp.com",
+      projectId: "bitcoin-site-8b190",
+      storageBucket: "bitcoin-site-8b190.appspot.com",
+      messagingSenderId: "548765450635",
+      appId: "1:548765450635:web:3a21f3fefefb117207ef8e",
+      measurementId: "G-CMJPS8XHF2"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    document.getElementById("loginForm").addEventListener("submit", async function(e) {
+      e.preventDefault();
+
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
+
+      if (!email || !password) {
+        alert("Please fill all fields.");
+        return;
+      }
+
+      try {
+        const querySnapshot = await db.collection("users")
+          .where("email", "==", email)
+          .where("password", "==", password)
+          .get();
+
+        if (querySnapshot.empty) {
+          alert("Invalid email or password.");
+          return;
+        }
+
+        const user = querySnapshot.docs[0].data();
+
+        if (!user.confirmed) {
+          alert("Your account has not been confirmed by the admin yet.");
+          return;
+        }
+
+        // Redirect immediately without alert
+        window.location.href = "dashboard.html";
+
+      } catch (error) {
+        console.error("Login error:", error);
+        alert("Login failed. Please try again.");
+      }
+    });
+  </script>
+
+</body>
+</html>
