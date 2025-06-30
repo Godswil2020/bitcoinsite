@@ -1,0 +1,300 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profit Bit Investment - Dashboard</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        .overview-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .overview-card {
+            background: rgba(26, 26, 26, 0.6);
+            border: 1px solid rgba(255, 140, 0, 0.2);
+            border-radius: 12px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .overview-card:hover {
+            transform: translateY(-2px);
+            border-color: #FF8C00;
+            box-shadow: 0 5px 20px rgba(255, 140, 0, 0.1);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .card-title {
+            color: #666;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .card-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #ffffff;
+            margin-bottom: 5px;
+        }
+
+        .card-subtitle {
+            color: #999;
+            font-size: 12px;
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: auto;
+        }
+
+        .icon-wallet {
+            background: linear-gradient(45deg, #8B5CF6, #A78BFA);
+        }
+
+        .icon-invested {
+            background: linear-gradient(45deg, #8B5CF6, #A78BFA);
+        }
+
+        .icon-status {
+            background: linear-gradient(45deg, #3B82F6, #60A5FA);
+        }
+
+        .icon-type {
+            background: linear-gradient(45deg, #6B7280, #9CA3AF);
+        }
+
+        .icon-withdrawal {
+            background: linear-gradient(45deg, #8B5CF6, #A78BFA);
+        }
+
+        .icon-referral {
+            background: linear-gradient(45deg, #8B5CF6, #A78BFA);
+        }
+
+        .icon-total {
+            background: linear-gradient(45deg, #8B5CF6, #A78BFA);
+        }
+
+        .status-pending {
+            color: #F59E0B;
+        }
+
+        .status-none {
+            color: #6B7280;
+        }
+
+        .bitcoin-preview {
+            background: rgba(26, 26, 26, 0.6);
+            border-radius: 12px;
+            padding: 30px;
+            border: 1px solid rgba(255, 140, 0, 0.2);
+        }
+
+        .bitcoin-preview h2 {
+            color: #FF8C00;
+            margin-bottom: 25px;
+            font-size: 22px;
+        }
+
+        .tradingview-widget-container {
+            height: 600px;
+            width: 100%;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        @media (max-width: 768px) {
+            .overview-cards {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .overview-card {
+                padding: 20px;
+            }
+
+            .card-value {
+                font-size: 24px;
+            }
+
+            .tradingview-widget-container {
+                height: 400px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <img src="/lovable-uploads/cd535645-cb98-4d05-b2ee-e2d8fd1707b0.png" alt="Profit Bit Investment" class="logo-img">
+                    <span class="logo-text">PROFIT BIT</span>
+                </div>
+                <button class="sidebar-toggle" id="sidebarToggle">☰</button>
+            </div>
+            
+            <ul class="sidebar-menu">
+                <li><a href="index.html" class="menu-item active"><span class="icon">📊</span><span class="text">Dashboard</span></a></li>
+                <li><a href="pages/transaction.html" class="menu-item"><span class="icon">📋</span><span class="text">Transaction History</span></a></li>
+                <li><a href="pages/live-trade.html" class="menu-item"><span class="icon">📈</span><span class="text">Live Trade</span></a></li>
+                <li><a href="pages/deposit.html" class="menu-item"><span class="icon">💰</span><span class="text">Deposit Investment</span></a></li>
+                <li><a href="pages/withdrawal.html" class="menu-item"><span class="icon">💳</span><span class="text">Withdrawal Investment</span></a></li>
+                <li><a href="pages/top-up.html" class="menu-item"><span class="icon">⬆️</span><span class="text">Top-up Investment</span></a></li>
+                <li><a href="pages/profile.html" class="menu-item"><span class="icon">👤</span><span class="text">Profile</span></a></li>
+                <li><a href="pages/referral.html" class="menu-item"><span class="icon">🔗</span><span class="text">Referral</span></a></li>
+                <li><a href="pages/support.html" class="menu-item"><span class="icon">💬</span><span class="text">Support</span></a></li>
+                <li><a href="pages/logout.html" class="menu-item"><span class="icon">🚪</span><span class="text">Logout</span></a></li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="header">
+                <h1>Dashboard</h1>
+                <div class="user-info">
+                    <span>Welcome, John Doe</span>
+                    <div class="user-avatar">JD</div>
+                </div>
+            </header>
+
+            <div class="dashboard-content">
+                <!-- Overview Cards -->
+                <div class="overview-cards">
+                    <div class="overview-card">
+                        <div class="card-header">
+                            <div>
+                                <div class="card-title">Wallet Balance</div>
+                                <div class="card-value">$ 0</div>
+                                <div class="card-subtitle">* User wallet balance</div>
+                            </div>
+                            <div class="card-icon icon-wallet">💎</div>
+                        </div>
+                    </div>
+                    
+                    <div class="overview-card">
+                        <div class="card-header">
+                            <div>
+                                <div class="card-title">Invested</div>
+                                <div class="card-value">$ 0</div>
+                                <div class="card-subtitle">* All time investment</div>
+                            </div>
+                            <div class="card-icon icon-invested">💎</div>
+                        </div>
+                    </div>
+                    
+                    <div class="overview-card">
+                        <div class="card-header">
+                            <div>
+                                <div class="card-title">Account Status</div>
+                                <div class="card-value status-pending">Pending</div>
+                                <div class="card-subtitle">* Users account status</div>
+                            </div>
+                            <div class="card-icon icon-status">🕐</div>
+                        </div>
+                    </div>
+                    
+                    <div class="overview-card">
+                        <div class="card-header">
+                            <div>
+                                <div class="card-title">Account Type</div>
+                                <div class="card-value status-none">None</div>
+                                <div class="card-subtitle">* Users account type</div>
+                            </div>
+                            <div class="card-icon icon-type">📋</div>
+                        </div>
+                    </div>
+                    
+                    <div class="overview-card">
+                        <div class="card-header">
+                            <div>
+                                <div class="card-title">Total Withdrawal</div>
+                                <div class="card-value">$ 0</div>
+                                <div class="card-subtitle">* Total account withdrawal</div>
+                            </div>
+                            <div class="card-icon icon-withdrawal">💎</div>
+                        </div>
+                    </div>
+                    
+                    <div class="overview-card">
+                        <div class="card-header">
+                            <div>
+                                <div class="card-title">Referral Bonus</div>
+                                <div class="card-value">$ 0</div>
+                                <div class="card-subtitle">* Total referral bonus</div>
+                            </div>
+                            <div class="card-icon icon-referral">💎</div>
+                        </div>
+                    </div>
+                    
+                    <div class="overview-card">
+                        <div class="card-header">
+                            <div>
+                                <div class="card-title">Total Referral</div>
+                                <div class="card-value">0</div>
+                                <div class="card-subtitle">* Total user referrals</div>
+                            </div>
+                            <div class="card-icon icon-total">💎</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bitcoin Preview Section -->
+                <div class="bitcoin-preview">
+                    <h2>Bitcoin Live Preview</h2>
+                    <div class="tradingview-widget-container">
+                        <div id="tradingview_btc_preview" style="height: 100%; width: 100%;"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="assets/js/script.js"></script>
+    <script src="https://s3.tradingview.com/tv.js"></script>
+    <script>
+        // Initialize TradingView Widget for Bitcoin Preview
+        document.addEventListener('DOMContentLoaded', function() {
+            new TradingView.widget({
+                "width": "100%",
+                "height": "100%",
+                "symbol": "BINANCE:BTCUSD",
+                "interval": "15",
+                "timezone": "Etc/UTC",
+                "theme": "dark",
+                "style": "1",
+                "locale": "en",
+                "toolbar_bg": "#1a1a1a",
+                "enable_publishing": false,
+                "allow_symbol_change": false,
+                "container_id": "tradingview_btc_preview",
+                "backgroundColor": "#1a1a1a",
+                "gridColor": "#333333",
+                "hide_top_toolbar": true,
+                "hide_legend": false,
+                "save_image": false,
+                "hide_volume": false
+            });
+        });
+    </script>
+</body>
+</html>

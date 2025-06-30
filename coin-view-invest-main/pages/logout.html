@@ -1,0 +1,291 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logout - Profit Bit Investment</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <style>
+        .logout-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a1a 50%, #2d2d2d 100%);
+        }
+
+        .logout-card {
+            background: linear-gradient(135deg, rgba(255, 140, 0, 0.1) 0%, rgba(26, 26, 26, 0.9) 100%);
+            border: 1px solid rgba(255, 140, 0, 0.3);
+            border-radius: 20px;
+            padding: 60px 50px;
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .logout-icon {
+            font-size: 80px;
+            margin-bottom: 30px;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        .logout-title {
+            color: #FF8C00;
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .logout-message {
+            color: #cccccc;
+            font-size: 18px;
+            margin-bottom: 40px;
+            line-height: 1.6;
+            animation: fadeIn 1s ease-out;
+        }
+
+        .logout-actions {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-bottom: 30px;
+            animation: fadeIn 1.2s ease-out;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #FF8C00, #FFA500);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(255, 140, 0, 0.4);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 15px 30px;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-3px);
+            color: white;
+        }
+
+        .logout-timer {
+            color: #FF8C00;
+            font-size: 14px;
+            margin-bottom: 20px;
+            animation: fadeIn 1.4s ease-out;
+        }
+
+        .security-notice {
+            background: rgba(33, 150, 243, 0.1);
+            border-left: 4px solid #2196F3;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 30px;
+            text-align: left;
+            animation: fadeIn 1.6s ease-out;
+        }
+
+        .security-notice h4 {
+            color: #2196F3;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .security-notice ul {
+            color: #cccccc;
+            font-size: 14px;
+            line-height: 1.6;
+            padding-left: 20px;
+        }
+
+        .security-notice li {
+            margin-bottom: 5px;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        .logout-icon {
+            animation: fadeIn 0.6s ease-out, pulse 2s infinite;
+        }
+
+        @media (max-width: 768px) {
+            .logout-card {
+                padding: 40px 30px;
+            }
+
+            .logout-title {
+                font-size: 24px;
+            }
+
+            .logout-message {
+                font-size: 16px;
+            }
+
+            .logout-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn-primary, .btn-secondary {
+                width: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="logout-container">
+        <div class="logout-card">
+            <div class="logout-icon">👋</div>
+            <h1 class="logout-title">You've Been Logged Out</h1>
+            <p class="logout-message">
+                Thank you for using Profit Bit Investment. Your session has been securely terminated and all your data has been protected.
+            </p>
+            
+            <div class="logout-timer" id="logoutTimer">
+                Redirecting to login page in <span id="countdown">10</span> seconds...
+            </div>
+
+            <div class="logout-actions">
+                <a href="../index.html" class="btn-primary">Login Again</a>
+                <a href="#" onclick="cancelRedirect()" class="btn-secondary">Stay Here</a>
+            </div>
+
+            <div class="security-notice">
+                <h4>Security Reminder</h4>
+                <ul>
+                    <li>Always log out when using shared or public computers</li>
+                    <li>Never share your login credentials with anyone</li>
+                    <li>Contact support immediately if you notice suspicious activity</li>
+                    <li>Use strong passwords and enable two-factor authentication</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let countdown = 10;
+        let redirectTimer;
+        let isRedirectCancelled = false;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Clear any existing session data
+            clearSessionData();
+            
+            // Start countdown
+            startCountdown();
+        });
+
+        function startCountdown() {
+            const countdownElement = document.getElementById('countdown');
+            
+            redirectTimer = setInterval(() => {
+                if (isRedirectCancelled) {
+                    clearInterval(redirectTimer);
+                    return;
+                }
+
+                countdown--;
+                countdownElement.textContent = countdown;
+
+                if (countdown <= 0) {
+                    clearInterval(redirectTimer);
+                    // In a real application, this would redirect to login page
+                    window.location.href = '../index.html';
+                }
+            }, 1000);
+        }
+
+        function cancelRedirect() {
+            isRedirectCancelled = true;
+            clearInterval(redirectTimer);
+            
+            const timerElement = document.getElementById('logoutTimer');
+            timerElement.innerHTML = 'Automatic redirect cancelled. You can stay on this page.';
+            timerElement.style.color = '#4CAF50';
+
+            // Update button text
+            const cancelButton = document.querySelector('.btn-secondary');
+            cancelButton.textContent = 'Cancelled';
+            cancelButton.style.opacity = '0.6';
+            cancelButton.style.cursor = 'default';
+            cancelButton.onclick = null;
+        }
+
+        function clearSessionData() {
+            // Clear localStorage
+            localStorage.removeItem('userToken');
+            localStorage.removeItem('selectedPackage');
+            localStorage.removeItem('sidebarCollapsed');
+            
+            // Clear sessionStorage
+            sessionStorage.clear();
+            
+            // Clear any cookies (if used)
+            document.cookie.split(";").forEach(function(c) { 
+                document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
+            });
+
+            console.log('Session data cleared successfully');
+        }
+
+        // Prevent back button after logout
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) {
+                window.location.href = '../index.html';
+            }
+        });
+
+        // Disable back button
+        window.history.pushState(null, null, window.location.href);
+        window.addEventListener('popstate', function(event) {
+            window.history.pushState(null, null, window.location.href);
+        });
+    </script>
+</body>
+</html>

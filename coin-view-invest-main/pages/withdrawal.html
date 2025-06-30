@@ -1,0 +1,545 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Withdrawal Investment - Profit Bit Investment</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <style>
+        .withdrawal-container {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .withdrawal-form {
+            background: rgba(26, 26, 26, 0.6);
+            border-radius: 16px;
+            padding: 40px;
+            border: 1px solid rgba(255, 140, 0, 0.2);
+            margin-bottom: 30px;
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .form-title {
+            color: #FF8C00;
+            font-size: 28px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .form-subtitle {
+            color: #cccccc;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .balance-display {
+            background: linear-gradient(135deg, rgba(255, 140, 0, 0.1) 0%, rgba(26, 26, 26, 0.8) 100%);
+            border: 1px solid rgba(255, 140, 0, 0.3);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .balance-label {
+            color: #cccccc;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .balance-amount {
+            color: #FF8C00;
+            font-size: 32px;
+            font-weight: bold;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-label {
+            color: #FF8C00;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .form-input, .form-select {
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 140, 0, 0.3);
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 14px;
+        }
+
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: #FF8C00;
+            box-shadow: 0 0 0 2px rgba(255, 140, 0, 0.2);
+        }
+
+        .form-select option {
+            background: #1a1a1a;
+            color: #ffffff;
+        }
+
+        .amount-input {
+            position: relative;
+        }
+
+        .currency-symbol {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #FF8C00;
+            font-weight: bold;
+        }
+
+        .amount-input input {
+            padding-left: 35px;
+        }
+
+        .max-button {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: linear-gradient(45deg, #FF8C00, #FFA500);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .max-button:hover {
+            box-shadow: 0 2px 8px rgba(255, 140, 0, 0.3);
+        }
+
+        .fee-info {
+            background: rgba(255, 152, 0, 0.1);
+            border-left: 4px solid #FF9800;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 20px 0;
+        }
+
+        .fee-info h4 {
+            color: #FF9800;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .fee-breakdown {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            color: #cccccc;
+            font-size: 14px;
+        }
+
+        .fee-total {
+            border-top: 1px solid rgba(255, 152, 0, 0.3);
+            padding-top: 10px;
+            margin-top: 10px;
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+            color: #ffffff;
+        }
+
+        .submit-button {
+            background: linear-gradient(45deg, #FF8C00, #FFA500);
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 30px;
+        }
+
+        .submit-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(255, 140, 0, 0.4);
+        }
+
+        .submit-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .withdrawal-history {
+            background: rgba(26, 26, 26, 0.6);
+            border-radius: 12px;
+            padding: 30px;
+            border: 1px solid rgba(255, 140, 0, 0.2);
+        }
+
+        .history-title {
+            color: #FF8C00;
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .history-details h4 {
+            color: #ffffff;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        .history-details p {
+            color: #cccccc;
+            font-size: 12px;
+        }
+
+        .history-status {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .status-completed { background: rgba(76, 175, 80, 0.2); color: #4CAF50; }
+        .status-pending { background: rgba(255, 152, 0, 0.2); color: #FF9800; }
+        .status-processing { background: rgba(33, 150, 243, 0.2); color: #2196F3; }
+
+        @media (max-width: 768px) {
+            .withdrawal-form, .withdrawal-history {
+                padding: 25px;
+                margin: 20px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .form-title {
+                font-size: 24px;
+            }
+
+            .balance-amount {
+                font-size: 24px;
+            }
+
+            .history-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <img src="/lovable-uploads/cd535645-cb98-4d05-b2ee-e2d8fd1707b0.png" alt="Profit Bit Investment" class="logo-img">
+                    <span class="logo-text">PROFIT BIT</span>
+                </div>
+                <button class="sidebar-toggle" id="sidebarToggle">☰</button>
+            </div>
+            
+            <ul class="sidebar-menu">
+                <li><a href="../index.html" class="menu-item"><span class="icon">📊</span><span class="text">Dashboard</span></a></li>
+                <li><a href="transaction.html" class="menu-item"><span class="icon">📋</span><span class="text">Transaction History</span></a></li>
+                <li><a href="live-trade.html" class="menu-item"><span class="icon">📈</span><span class="text">Live Trade</span></a></li>
+                <li><a href="deposit.html" class="menu-item"><span class="icon">💰</span><span class="text">Deposit Investment</span></a></li>
+                <li><a href="withdrawal.html" class="menu-item active"><span class="icon">💳</span><span class="text">Withdrawal Investment</span></a></li>
+                <li><a href="top-up.html" class="menu-item"><span class="icon">⬆️</span><span class="text">Top-up Investment</span></a></li>
+                <li><a href="profile.html" class="menu-item"><span class="icon">👤</span><span class="text">Profile</span></a></li>
+                <li><a href="referral.html" class="menu-item"><span class="icon">🔗</span><span class="text">Referral</span></a></li>
+                <li><a href="support.html" class="menu-item"><span class="icon">💬</span><span class="text">Support</span></a></li>
+                <li><a href="logout.html" class="menu-item"><span class="icon">🚪</span><span class="text">Logout</span></a></li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="header">
+                <h1>Withdrawal Investment</h1>
+                <div class="user-info">
+                    <span>Welcome, John Doe</span>
+                    <div class="user-avatar">JD</div>
+                </div>
+            </header>
+
+            <div class="dashboard-content">
+                <div class="withdrawal-container">
+                    <!-- Withdrawal Form -->
+                    <div class="withdrawal-form">
+                        <div class="form-header">
+                            <h1 class="form-title">Request Withdrawal</h1>
+                            <p class="form-subtitle">Withdraw your profits securely to your preferred cryptocurrency wallet</p>
+                        </div>
+
+                        <!-- Available Balance -->
+                        <div class="balance-display">
+                            <div class="balance-label">Available Balance</div>
+                            <div class="balance-amount">$8,750.00</div>
+                        </div>
+
+                        <form id="withdrawalForm">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Full Name</label>
+                                    <input type="text" class="form-input" id="fullName" value="John Doe" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">Country</label>
+                                    <select class="form-select" id="country" required>
+                                        <option value="">Select Country</option>
+                                        <option value="US" selected>United States</option>
+                                        <option value="UK">United Kingdom</option>
+                                        <option value="CA">Canada</option>
+                                        <option value="AU">Australia</option>
+                                        <option value="DE">Germany</option>
+                                        <option value="FR">France</option>
+                                        <option value="JP">Japan</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Withdrawal Method</label>
+                                    <select class="form-select" id="withdrawalMethod" required>
+                                        <option value="">Select Method</option>
+                                        <option value="BTC">Bitcoin (BTC)</option>
+                                        <option value="ETH">Ethereum (ETH)</option>
+                                        <option value="USDT">Tether (USDT)</option>
+                                        <option value="LTC">Litecoin (LTC)</option>
+                                        <option value="BCH">Bitcoin Cash (BCH)</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">Withdrawal Amount</label>
+                                    <div class="amount-input">
+                                        <span class="currency-symbol">$</span>
+                                        <input type="number" class="form-input" id="amount" placeholder="Enter amount" min="50" step="0.01" required>
+                                        <button type="button" class="max-button" onclick="setMaxAmount()">MAX</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group full-width">
+                                <label class="form-label">Wallet Address</label>
+                                <input type="text" class="form-input" id="walletAddress" placeholder="Enter your wallet address" required>
+                            </div>
+
+                            <!-- Fee Information -->
+                            <div class="fee-info">
+                                <h4>Withdrawal Fee Breakdown</h4>
+                                <div class="fee-breakdown">
+                                    <span>Withdrawal Amount:</span>
+                                    <span id="withdrawalAmount">$0.00</span>
+                                </div>
+                                <div class="fee-breakdown">
+                                    <span>Processing Fee (2%):</span>
+                                    <span id="processingFee">$0.00</span>
+                                </div>
+                                <div class="fee-breakdown">
+                                    <span>Network Fee:</span>
+                                    <span id="networkFee">$5.00</span>
+                                </div>
+                                <div class="fee-total">
+                                    <span>You Will Receive:</span>
+                                    <span id="finalAmount">$0.00</span>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="submit-button" id="submitButton">
+                                Request Withdrawal
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Withdrawal History -->
+                    <div class="withdrawal-history">
+                        <h2 class="history-title">Recent Withdrawals</h2>
+                        
+                        <div class="history-item">
+                            <div class="history-details">
+                                <h4>Bitcoin Withdrawal - $300.00</h4>
+                                <p>Dec 25, 2024 8:45 AM</p>
+                            </div>
+                            <div class="history-status status-pending">Pending</div>
+                        </div>
+
+                        <div class="history-item">
+                            <div class="history-details">
+                                <h4>USDT Withdrawal - $150.00</h4>
+                                <p>Dec 22, 2024 3:20 PM</p>
+                            </div>
+                            <div class="history-status status-completed">Completed</div>
+                        </div>
+
+                        <div class="history-item">
+                            <div class="history-details">
+                                <h4>Ethereum Withdrawal - $450.00</h4>
+                                <p>Dec 18, 2024 11:30 AM</p>
+                            </div>
+                            <div class="history-status status-processing">Processing</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../assets/js/script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const amountInput = document.getElementById('amount');
+            const withdrawalForm = document.getElementById('withdrawalForm');
+
+            // Calculate fees when amount changes
+            amountInput.addEventListener('input', calculateFees);
+            
+            // Handle form submission
+            withdrawalForm.addEventListener('submit', handleWithdrawalSubmit);
+
+            // Initialize fees calculation
+            calculateFees();
+        });
+
+        function calculateFees() {
+            const amount = parseFloat(document.getElementById('amount').value) || 0;
+            const processingFeeRate = 0.02; // 2%
+            const networkFee = 5.00; // Fixed network fee
+
+            const processingFee = amount * processingFeeRate;
+            const totalFees = processingFee + networkFee;
+            const finalAmount = Math.max(0, amount - totalFees);
+
+            document.getElementById('withdrawalAmount').textContent = '$' + amount.toFixed(2);
+            document.getElementById('processingFee').textContent = '$' + processingFee.toFixed(2);
+            document.getElementById('networkFee').textContent = '$' + networkFee.toFixed(2);
+            document.getElementById('finalAmount').textContent = '$' + finalAmount.toFixed(2);
+        }
+
+        function setMaxAmount() {
+            const maxBalance = 8750.00; // Available balance
+            document.getElementById('amount').value = maxBalance;
+            calculateFees();
+        }
+
+        function handleWithdrawalSubmit(e) {
+            e.preventDefault();
+
+            const formData = {
+                fullName: document.getElementById('fullName').value,
+                country: document.getElementById('country').value,
+                withdrawalMethod: document.getElementById('withdrawalMethod').value,
+                amount: parseFloat(document.getElementById('amount').value),
+                walletAddress: document.getElementById('walletAddress').value,
+                timestamp: new Date().toISOString()
+            };
+
+            // Validate form
+            if (!validateForm(e.target)) {
+                showToast('Please fill in all required fields', 'error');
+                return;
+            }
+
+            // Validate minimum withdrawal amount
+            if (formData.amount < 50) {
+                showToast('Minimum withdrawal amount is $50', 'error');
+                return;
+            }
+
+            // Validate maximum withdrawal amount
+            const maxBalance = 8750.00;
+            if (formData.amount > maxBalance) {
+                showToast('Insufficient balance', 'error');
+                return;
+            }
+
+            // Validate wallet address format (basic validation)
+            if (!isValidWalletAddress(formData.walletAddress, formData.withdrawalMethod)) {
+                showToast('Please enter a valid wallet address', 'error');
+                return;
+            }
+
+            // Simulate withdrawal processing
+            const submitButton = document.getElementById('submitButton');
+            submitButton.disabled = true;
+            submitButton.textContent = 'Processing...';
+
+            setTimeout(() => {
+                console.log('Withdrawal submitted:', formData);
+                showToast('Withdrawal request submitted successfully!', 'success');
+                
+                // Reset form after success
+                setTimeout(() => {
+                    e.target.reset();
+                    calculateFees();
+                    submitButton.disabled = false;
+                    submitButton.textContent = 'Request Withdrawal';
+                }, 2000);
+            }, 2000);
+        }
+
+        function isValidWalletAddress(address, method) {
+            // Basic wallet address validation
+            if (!address || address.length < 20) return false;
+
+            const patterns = {
+                'BTC': /^[13][a-km-zA-HJ-NP-Z1-9]{25,34}$|^bc1[a-z0-9]{39,59}$/,
+                'ETH': /^0x[a-fA-F0-9]{40}$/,
+                'USDT': /^T[A-Za-z1-9]{33}$|^0x[a-fA-F0-9]{40}$/,
+                'LTC': /^[LM3][a-km-zA-HJ-NP-Z1-9]{26,33}$/,
+                'BCH': /^[13][a-km-zA-HJ-NP-Z1-9]{25,34}$|^bitcoincash:[a-z0-9]{42}$/
+            };
+
+            return patterns[method] ? patterns[method].test(address) : address.length >= 20;
+        }
+    </script>
+</body>
+</html>

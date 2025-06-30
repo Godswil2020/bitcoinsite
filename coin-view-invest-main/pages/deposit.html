@@ -1,0 +1,420 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deposit Investment - Profit Bit Investment</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <style>
+        .packages-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .package-card {
+            background: linear-gradient(135deg, rgba(255, 140, 0, 0.1) 0%, rgba(26, 26, 26, 0.9) 100%);
+            border: 2px solid rgba(255, 140, 0, 0.3);
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .package-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #FF8C00, #FFA500);
+        }
+
+        .package-card:hover {
+            transform: translateY(-10px);
+            border-color: #FF8C00;
+            box-shadow: 0 20px 40px rgba(255, 140, 0, 0.3);
+        }
+
+        .package-card.popular {
+            border-color: #FF8C00;
+            transform: scale(1.05);
+        }
+
+        .package-card.popular::after {
+            content: 'POPULAR';
+            position: absolute;
+            top: 20px;
+            right: -30px;
+            background: linear-gradient(45deg, #FF8C00, #FFA500);
+            color: white;
+            padding: 5px 40px;
+            font-size: 12px;
+            font-weight: bold;
+            transform: rotate(45deg);
+        }
+
+        .package-name {
+            font-size: 28px;
+            font-weight: bold;
+            color: #FF8C00;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .package-price {
+            font-size: 48px;
+            font-weight: bold;
+            color: #ffffff;
+            margin-bottom: 10px;
+        }
+
+        .package-currency {
+            font-size: 20px;
+            color: #cccccc;
+            margin-bottom: 20px;
+        }
+
+        .package-duration {
+            background: rgba(255, 140, 0, 0.2);
+            color: #FF8C00;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 25px;
+            display: inline-block;
+        }
+
+        .package-features {
+            list-style: none;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        .package-features li {
+            padding: 8px 0;
+            color: #cccccc;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .package-features li::before {
+            content: '✓';
+            color: #4CAF50;
+            font-weight: bold;
+            width: 20px;
+            text-align: center;
+        }
+
+        .package-button {
+            background: linear-gradient(45deg, #FF8C00, #FFA500);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            width: 100%;
+        }
+
+        .package-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(255, 140, 0, 0.4);
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .page-title {
+            font-size: 36px;
+            color: #FF8C00;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .page-subtitle {
+            font-size: 18px;
+            color: #cccccc;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .info-section {
+            background: rgba(26, 26, 26, 0.6);
+            border-radius: 12px;
+            padding: 30px;
+            border: 1px solid rgba(255, 140, 0, 0.2);
+            margin-top: 40px;
+        }
+
+        .info-title {
+            color: #FF8C00;
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .info-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .info-icon {
+            font-size: 32px;
+            margin-bottom: 15px;
+        }
+
+        .info-item h4 {
+            color: #ffffff;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .info-item p {
+            color: #cccccc;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 768px) {
+            .packages-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .package-card {
+                padding: 25px;
+            }
+
+            .package-price {
+                font-size: 36px;
+            }
+
+            .page-title {
+                font-size: 28px;
+            }
+
+            .info-section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <img src="/lovable-uploads/cd535645-cb98-4d05-b2ee-e2d8fd1707b0.png" alt="Profit Bit Investment" class="logo-img">
+                    <span class="logo-text">PROFIT BIT</span>
+                </div>
+                <button class="sidebar-toggle" id="sidebarToggle">☰</button>
+            </div>
+            
+            <ul class="sidebar-menu">
+                <li><a href="../index.html" class="menu-item"><span class="icon">📊</span><span class="text">Dashboard</span></a></li>
+                <li><a href="transaction.html" class="menu-item"><span class="icon">📋</span><span class="text">Transaction History</span></a></li>
+                <li><a href="live-trade.html" class="menu-item"><span class="icon">📈</span><span class="text">Live Trade</span></a></li>
+                <li><a href="deposit.html" class="menu-item active"><span class="icon">💰</span><span class="text">Deposit Investment</span></a></li>
+                <li><a href="withdrawal.html" class="menu-item"><span class="icon">💳</span><span class="text">Withdrawal Investment</span></a></li>
+                <li><a href="top-up.html" class="menu-item"><span class="icon">⬆️</span><span class="text">Top-up Investment</span></a></li>
+                <li><a href="profile.html" class="menu-item"><span class="icon">👤</span><span class="text">Profile</span></a></li>
+                <li><a href="referral.html" class="menu-item"><span class="icon">🔗</span><span class="text">Referral</span></a></li>
+                <li><a href="support.html" class="menu-item"><span class="icon">💬</span><span class="text">Support</span></a></li>
+                <li><a href="logout.html" class="menu-item"><span class="icon">🚪</span><span class="text">Logout</span></a></li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="header">
+                <h1>Deposit Investment</h1>
+                <div class="user-info">
+                    <span>Welcome, John Doe</span>
+                    <div class="user-avatar">JD</div>
+                </div>
+            </header>
+
+            <div class="dashboard-content">
+                <!-- Page Header -->
+                <div class="page-header">
+                    <h1 class="page-title">Choose Your Investment Package</h1>
+                    <p class="page-subtitle">Select the perfect investment plan that suits your financial goals. All packages offer competitive returns with secure and transparent trading.</p>
+                </div>
+
+                <!-- Packages Grid -->
+                <div class="packages-grid">
+                    <!-- Basic Package -->
+                    <div class="package-card">
+                        <div class="package-name">Basic</div>
+                        <div class="package-price">$100</div>
+                        <div class="package-currency">Minimum Investment</div>
+                        <div class="package-duration">30 Days Duration</div>
+                        
+                        <ul class="package-features">
+                            <li>5% Daily Profit</li>
+                            <li>24/7 Customer Support</li>
+                            <li>Instant Withdrawals</li>
+                            <li>Basic Analytics</li>
+                            <li>Email Notifications</li>
+                        </ul>
+                        
+                        <button class="package-button" onclick="selectPackage('basic', 100)">Get Started</button>
+                    </div>
+
+                    <!-- Silver Package -->
+                    <div class="package-card">
+                        <div class="package-name">Silver</div>
+                        <div class="package-price">$300</div>
+                        <div class="package-currency">Minimum Investment</div>
+                        <div class="package-duration">45 Days Duration</div>
+                        
+                        <ul class="package-features">
+                            <li>7% Daily Profit</li>
+                            <li>Priority Support</li>
+                            <li>Instant Withdrawals</li>
+                            <li>Advanced Analytics</li>
+                            <li>SMS + Email Alerts</li>
+                            <li>Risk Management Tools</li>
+                        </ul>
+                        
+                        <button class="package-button" onclick="selectPackage('silver', 300)">Get Started</button>
+                    </div>
+
+                    <!-- Business Package -->
+                    <div class="package-card popular">
+                        <div class="package-name">Business</div>
+                        <div class="package-price">$500</div>
+                        <div class="package-currency">Minimum Investment</div>
+                        <div class="package-duration">60 Days Duration</div>
+                        
+                        <ul class="package-features">
+                            <li>10% Daily Profit</li>
+                            <li>VIP Support Line</li>
+                            <li>Instant Withdrawals</li>
+                            <li>Professional Analytics</li>
+                            <li>Multi-channel Alerts</li>
+                            <li>Advanced Risk Tools</li>
+                            <li>Personal Account Manager</li>
+                        </ul>
+                        
+                        <button class="package-button" onclick="selectPackage('business', 500)">Get Started</button>
+                    </div>
+
+                    <!-- Premium Package -->
+                    <div class="package-card">
+                        <div class="package-name">Premium</div>
+                        <div class="package-price">$1,000</div>
+                        <div class="package-currency">Minimum Investment</div>
+                        <div class="package-duration">90 Days Duration</div>
+                        
+                        <ul class="package-features">
+                            <li>15% Daily Profit</li>
+                            <li>White-glove Support</li>
+                            <li>Priority Withdrawals</li>
+                            <li>Enterprise Analytics</li>
+                            <li>Custom Notifications</li>
+                            <li>Complete Risk Suite</li>
+                            <li>Dedicated Account Team</li>
+                            <li>Exclusive Market Insights</li>
+                        </ul>
+                        
+                        <button class="package-button" onclick="selectPackage('premium', 1000)">Get Started</button>
+                    </div>
+                </div>
+
+                <!-- Info Section -->
+                <div class="info-section">
+                    <h2 class="info-title">Why Choose Profit Bit Investment?</h2>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-icon">🔒</div>
+                            <h4>Secure & Safe</h4>
+                            <p>Your investments are protected with bank-level security and encryption protocols.</p>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-icon">📈</div>
+                            <h4>High Returns</h4>
+                            <p>Competitive daily returns with transparent profit-sharing mechanisms.</p>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-icon">⚡</div>
+                            <h4>Instant Processing</h4>
+                            <p>Quick deposits and withdrawals processed within minutes, not days.</p>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-icon">🌍</div>
+                            <h4>Global Access</h4>
+                            <p>Available worldwide with multi-currency support and local payment methods.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../assets/js/script.js"></script>
+    <script>
+        function selectPackage(packageName, minAmount) {
+            // Store selected package in localStorage
+            const packageData = {
+                name: packageName,
+                minAmount: minAmount,
+                selectedAt: new Date().toISOString()
+            };
+            
+            localStorage.setItem('selectedPackage', JSON.stringify(packageData));
+            
+            // Redirect to top-up page
+            window.location.href = 'top-up.html';
+        }
+        
+        // Add animation on scroll
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.package-card');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach((entry, index) => {
+                    if (entry.isIntersecting) {
+                        setTimeout(() => {
+                            entry.target.style.opacity = '1';
+                            entry.target.style.transform = 'translateY(0)';
+                        }, index * 100);
+                    }
+                });
+            });
+            
+            cards.forEach(card => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(30px)';
+                card.style.transition = 'all 0.6s ease';
+                observer.observe(card);
+            });
+        });
+    </script>
+</body>
+</html>

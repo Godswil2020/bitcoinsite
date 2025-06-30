@@ -1,0 +1,853 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Support - Profit Bit Investment</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <style>
+        .support-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .support-hero {
+            background: linear-gradient(135deg, rgba(255, 140, 0, 0.15) 0%, rgba(26, 26, 26, 0.9) 100%);
+            border: 1px solid rgba(255, 140, 0, 0.3);
+            border-radius: 16px;
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .hero-title {
+            color: #FF8C00;
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .hero-subtitle {
+            color: #cccccc;
+            font-size: 18px;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .support-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .support-card {
+            background: linear-gradient(135deg, rgba(255, 140, 0, 0.1) 0%, rgba(26, 26, 26, 0.8) 100%);
+            border: 1px solid rgba(255, 140, 0, 0.3);
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .support-card:hover {
+            transform: translateY(-5px);
+            border-color: #FF8C00;
+            box-shadow: 0 10px 30px rgba(255, 140, 0, 0.2);
+        }
+
+        .support-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        .support-title {
+            color: #FF8C00;
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .support-description {
+            color: #cccccc;
+            font-size: 14px;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .support-action {
+            background: linear-gradient(45deg, #FF8C00, #FFA500);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .support-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 140, 0, 0.3);
+            color: white;
+        }
+
+        .contact-info-section {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .contact-info {
+            background: rgba(26, 26, 26, 0.6);
+            border-radius: 16px;
+            padding: 30px;
+            border: 1px solid rgba(255, 140, 0, 0.2);
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+        }
+
+        .contact-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .contact-item-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #FF8C00, #FFA500);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .contact-item-content h4 {
+            color: #ffffff;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        .contact-item-content p {
+            color: #cccccc;
+            font-size: 12px;
+            margin: 0;
+        }
+
+        .faq-section {
+            background: rgba(26, 26, 26, 0.6);
+            border-radius: 16px;
+            padding: 40px;
+            border: 1px solid rgba(255, 140, 0, 0.2);
+        }
+
+        .faq-item {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+        }
+
+        .faq-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .faq-question {
+            color: #FF8C00;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .faq-question:hover {
+            color: #FFA500;
+        }
+
+        .faq-answer {
+            color: #cccccc;
+            font-size: 14px;
+            line-height: 1.6;
+            display: none;
+        }
+
+        .faq-answer.active {
+            display: block;
+        }
+
+        .faq-toggle {
+            font-size: 18px;
+            color: #FF8C00;
+            transition: transform 0.3s ease;
+        }
+
+        .faq-toggle.active {
+            transform: rotate(45deg);
+        }
+
+        .form-title {
+            color: #FF8C00;
+            font-size: 24px;
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+
+        /* Live Chat Popup Styles */
+        .chat-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .chat-overlay.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .chat-popup {
+            width: 90%;
+            max-width: 450px;
+            height: 600px;
+            background: linear-gradient(135deg, #1a1a1a 0%, #0f0f0f 100%);
+            border: 2px solid #FF8C00;
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(255, 140, 0, 0.3);
+            animation: slideUp 0.4s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .chat-header {
+            background: linear-gradient(45deg, #FF8C00, #FFA500);
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: white;
+        }
+
+        .chat-header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .support-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: bold;
+            color: #FF8C00;
+        }
+
+        .support-info h3 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .support-info p {
+            margin: 2px 0 0 0;
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .chat-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 50%;
+            transition: background-color 0.3s ease;
+        }
+
+        .chat-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: linear-gradient(180deg, #1a1a1a 0%, #0f0f0f 100%);
+        }
+
+        .message {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .message.user {
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .message.support .message-avatar {
+            background: linear-gradient(45deg, #FF8C00, #FFA500);
+            color: white;
+        }
+
+        .message.user .message-avatar {
+            background: linear-gradient(45deg, #4CAF50, #66BB6A);
+            color: white;
+        }
+
+        .message-content {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 12px 16px;
+            border-radius: 15px;
+            max-width: 70%;
+            color: #ffffff;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .message.user .message-content {
+            background: linear-gradient(45deg, #FF8C00, #FFA500);
+        }
+
+        .message-time {
+            font-size: 11px;
+            color: #999;
+            margin-top: 5px;
+            text-align: center;
+        }
+
+        .chat-input-area {
+            padding: 20px;
+            background: rgba(26, 26, 26, 0.9);
+            border-top: 1px solid rgba(255, 140, 0, 0.3);
+        }
+
+        .chat-input-container {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+        }
+
+        .chat-input {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 140, 0, 0.3);
+            border-radius: 20px;
+            padding: 12px 16px;
+            color: #ffffff;
+            font-size: 14px;
+            font-family: inherit;
+            resize: none;
+            min-height: 20px;
+            max-height: 80px;
+        }
+
+        .chat-input:focus {
+            outline: none;
+            border-color: #FF8C00;
+            box-shadow: 0 0 0 2px rgba(255, 140, 0, 0.2);
+        }
+
+        .chat-send {
+            background: linear-gradient(45deg, #FF8C00, #FFA500);
+            border: none;
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: white;
+            font-size: 18px;
+            transition: transform 0.2s ease;
+        }
+
+        .chat-send:hover {
+            transform: scale(1.05);
+        }
+
+        .typing-indicator {
+            display: none;
+            margin-bottom: 15px;
+        }
+
+        .typing-indicator.active {
+            display: block;
+        }
+
+        .typing-dots {
+            display: flex;
+            gap: 4px;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            width: fit-content;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #FF8C00;
+            animation: typingDot 1.4s infinite;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typingDot {
+            0%, 60%, 100% { opacity: 0.3; }
+            30% { opacity: 1; }
+        }
+
+        @media (max-width: 768px) {
+            .support-container > * {
+                margin: 20px;
+            }
+
+            .support-options {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .support-hero, .contact-info, .faq-section {
+                padding: 25px;
+            }
+
+            .hero-title {
+                font-size: 24px;
+            }
+
+            .chat-popup {
+                width: 95%;
+                height: 80vh;
+                max-height: 600px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <img src="/lovable-uploads/cd535645-cb98-4d05-b2ee-e2d8fd1707b0.png" alt="Profit Bit Investment" class="logo-img">
+                    <span class="logo-text">PROFIT BIT</span>
+                </div>
+                <button class="sidebar-toggle" id="sidebarToggle">☰</button>
+            </div>
+            
+            <ul class="sidebar-menu">
+                <li><a href="../index.html" class="menu-item"><span class="icon">📊</span><span class="text">Dashboard</span></a></li>
+                <li><a href="transaction.html" class="menu-item"><span class="icon">📋</span><span class="text">Transaction History</span></a></li>
+                <li><a href="live-trade.html" class="menu-item"><span class="icon">📈</span><span class="text">Live Trade</span></a></li>
+                <li><a href="deposit.html" class="menu-item"><span class="icon">💰</span><span class="text">Deposit Investment</span></a></li>
+                <li><a href="withdrawal.html" class="menu-item"><span class="icon">💳</span><span class="text">Withdrawal Investment</span></a></li>
+                <li><a href="top-up.html" class="menu-item"><span class="icon">⬆️</span><span class="text">Top-up Investment</span></a></li>
+                <li><a href="profile.html" class="menu-item"><span class="icon">👤</span><span class="text">Profile</span></a></li>
+                <li><a href="referral.html" class="menu-item"><span class="icon">🔗</span><span class="text">Referral</span></a></li>
+                <li><a href="support.html" class="menu-item active"><span class="icon">💬</span><span class="text">Support</span></a></li>
+                <li><a href="logout.html" class="menu-item"><span class="icon">🚪</span><span class="text">Logout</span></a></li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="header">
+                <h1>Support Center</h1>
+                <div class="user-info">
+                    <span>Welcome, John Doe</span>
+                    <div class="user-avatar">JD</div>
+                </div>
+            </header>
+
+            <div class="dashboard-content">
+                <div class="support-container">
+                    <!-- Hero Section -->
+                    <div class="support-hero">
+                        <h1 class="hero-title">How Can We Help You?</h1>
+                        <p class="hero-subtitle">Our dedicated support team is here 24/7 to assist you with any questions or concerns about your investments.</p>
+                    </div>
+
+                    <!-- Support Options -->
+                    <div class="support-options">
+                        <div class="support-card">
+                            <div class="support-icon">💬</div>
+                            <h3 class="support-title">Live Chat</h3>
+                            <p class="support-description">Get instant help from our support agents. Available 24/7 for all your questions.</p>
+                            <button class="support-action" onclick="openLiveChat()">Start Chat</button>
+                        </div>
+
+                        <div class="support-card">
+                            <div class="support-icon">📞</div>
+                            <h3 class="support-title">Phone Support</h3>
+                            <p class="support-description">Call our dedicated support line for immediate assistance with urgent matters.</p>
+                            <a href="tel:+1-800-PROFIT" class="support-action">Call Now</a>
+                        </div>
+
+                        <div class="support-card">
+                            <div class="support-icon">📧</div>
+                            <h3 class="support-title">Email Support</h3>
+                            <p class="support-description">Send us detailed questions and receive comprehensive responses within 2 hours.</p>
+                            <a href="mailto:support@profitbit.com" class="support-action">Send Email</a>
+                        </div>
+                    </div>
+
+                    <!-- Contact Info -->
+                    <div class="contact-info-section">
+                        <div class="contact-info">
+                            <h3 class="form-title">Contact Information</h3>
+                            
+                            <div class="contact-item">
+                                <div class="contact-item-icon">📞</div>
+                                <div class="contact-item-content">
+                                    <h4>Phone Support</h4>
+                                    <p>+1-800-PROFIT (776-348)<br>Available 24/7</p>
+                                </div>
+                            </div>
+
+                            <div class="contact-item">
+                                <div class="contact-item-icon">📧</div>
+                                <div class="contact-item-content">
+                                    <h4>Email Support</h4>
+                                    <p>support@profitbit.com<br>Response within 2 hours</p>
+                                </div>
+                            </div>
+
+                            <div class="contact-item">
+                                <div class="contact-item-icon">💬</div>
+                                <div class="contact-item-content">
+                                    <h4>Live Chat</h4>
+                                    <p>Available on all pages<br>Instant responses</p>
+                                </div>
+                            </div>
+
+                            <div class="contact-item">
+                                <div class="contact-item-icon">🌍</div>
+                                <div class="contact-item-content">
+                                    <h4>Office Hours</h4>
+                                    <p>24/7 Support<br>All time zones covered</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- FAQ Section -->
+                    <div class="faq-section">
+                        <h2 class="form-title">Frequently Asked Questions</h2>
+                        
+                        <div class="faq-item">
+                            <div class="faq-question" onclick="toggleFAQ(this)">
+                                How long does it take to process withdrawals?
+                                <span class="faq-toggle">+</span>
+                            </div>
+                            <div class="faq-answer">
+                                Withdrawal requests are typically processed within 24-48 hours. Cryptocurrency withdrawals may take additional time depending on network congestion, usually 1-6 confirmations.
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <div class="faq-question" onclick="toggleFAQ(this)">
+                                What is the minimum investment amount?
+                                <span class="faq-toggle">+</span>
+                            </div>
+                            <div class="faq-answer">
+                                The minimum investment varies by package: Basic ($100), Silver ($300), Business ($500), and Premium ($1,000). Each package offers different benefits and return rates.
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <div class="faq-question" onclick="toggleFAQ(this)">
+                                How do referral commissions work?
+                                <span class="faq-toggle">+</span>
+                            </div>
+                            <div class="faq-answer">
+                                You earn commission based on your tier: Bronze (5%), Silver (7%), and Gold (10%). Commissions are paid on every investment made by users you refer, and tier upgrades are based on the number of active referrals.
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <div class="faq-question" onclick="toggleFAQ(this)">
+                                Is my investment secure?
+                                <span class="faq-toggle">+</span>
+                            </div>
+                            <div class="faq-answer">
+                                Yes, we use bank-level security protocols, including SSL encryption, two-factor authentication, and cold storage for cryptocurrency assets. Your funds are protected by multiple security layers.
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <div class="faq-question" onclick="toggleFAQ(this)">
+                                Can I cancel my investment?
+                                <span class="faq-toggle">+</span>
+                            </div>
+                            <div class="faq-answer">
+                                Investment packages have specific durations (30-90 days). Early withdrawal may be possible with penalties. Please contact support to discuss your specific situation and available options.
+                            </div>
+                        </div>
+
+                        <div class="faq-item">
+                            <div class="faq-question" onclick="toggleFAQ(this)">
+                                What cryptocurrencies do you accept?
+                                <span class="faq-toggle">+</span>
+                            </div>
+                            <div class="faq-answer">
+                                We accept Bitcoin (BTC), Ethereum (ETH), Tether (USDT), Litecoin (LTC), and Bitcoin Cash (BCH). All transactions are processed securely through our integrated wallet system.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Live Chat Popup -->
+    <div class="chat-overlay" id="chatOverlay">
+        <div class="chat-popup">
+            <div class="chat-header">
+                <div class="chat-header-left">
+                    <div class="support-avatar">PB</div>
+                    <div class="support-info">
+                        <h3>Profit Bit Support</h3>
+                        <p>Online • Typically replies instantly</p>
+                    </div>
+                </div>
+                <button class="chat-close" onclick="closeLiveChat()">×</button>
+            </div>
+            
+            <div class="chat-messages" id="chatMessages">
+                <div class="message support">
+                    <div class="message-avatar">PB</div>
+                    <div>
+                        <div class="message-content">
+                            Hello! Welcome to Profit Bit Investment Support. I'm here to help you with any questions about your investments, account, or our services. How can I assist you today?
+                        </div>
+                        <div class="message-time" id="welcomeTime"></div>
+                    </div>
+                </div>
+                
+                <div class="typing-indicator" id="typingIndicator">
+                    <div class="message support">
+                        <div class="message-avatar">PB</div>
+                        <div class="typing-dots">
+                            <div class="typing-dot"></div>
+                            <div class="typing-dot"></div>
+                            <div class="typing-dot"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="chat-input-area">
+                <div class="chat-input-container">
+                    <textarea class="chat-input" id="chatInput" placeholder="Type your message..." rows="1"></textarea>
+                    <button class="chat-send" onclick="sendMessage()">➤</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../assets/js/script.js"></script>
+    <script>
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set welcome message time
+            const welcomeTime = document.getElementById('welcomeTime');
+            if (welcomeTime) {
+                welcomeTime.textContent = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            }
+        });
+
+        // Live Chat Functions
+        function openLiveChat() {
+            const chatOverlay = document.getElementById('chatOverlay');
+            chatOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            
+            // Focus on input
+            setTimeout(() => {
+                document.getElementById('chatInput').focus();
+            }, 500);
+        }
+
+        function closeLiveChat() {
+            const chatOverlay = document.getElementById('chatOverlay');
+            chatOverlay.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            // Add user message
+            addMessage(message, 'user');
+            input.value = '';
+            
+            // Show typing indicator
+            showTypingIndicator();
+            
+            // Simulate support response
+            setTimeout(() => {
+                hideTypingIndicator();
+                addSupportResponse(message);
+            }, 1500 + Math.random() * 2000);
+        }
+
+        function addMessage(text, sender) {
+            const messagesContainer = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            
+            const currentTime = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            
+            messageDiv.innerHTML = `
+                <div class="message-avatar">${sender === 'user' ? 'JD' : 'PB'}</div>
+                <div>
+                    <div class="message-content">${text}</div>
+                    <div class="message-time">${currentTime}</div>
+                </div>
+            `;
+            
+            messagesContainer.insertBefore(messageDiv, document.getElementById('typingIndicator'));
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function addSupportResponse(userMessage) {
+            const responses = [
+                "Thank you for contacting us! I'd be happy to help you with that. Can you provide more details about your specific situation?",
+                "I understand your concern. Let me check that information for you right away. This should only take a moment.",
+                "That's a great question! Based on your account, I can see that you're eligible for our premium support options. Would you like me to explain those?",
+                "I can definitely assist you with that. For your security, I'll need to verify some account details first. Can you confirm your registered email address?",
+                "Thank you for bringing this to my attention. I'm going to escalate this to our technical team for immediate review. You should expect a resolution within 24 hours.",
+                "I see you're interested in our investment packages. Based on your query, I'd recommend starting with our Silver package. Would you like me to explain the benefits?",
+                "That's concerning, and I apologize for any inconvenience. Let me pull up your account details to see how we can resolve this quickly for you.",
+                "Great! I'm glad you're interested in maximizing your investment returns. Our team has some excellent strategies that might work well for your situation."
+            ];
+            
+            const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+            addMessage(randomResponse, 'support');
+        }
+
+        function showTypingIndicator() {
+            const typingIndicator = document.getElementById('typingIndicator');
+            typingIndicator.classList.add('active');
+            
+            const messagesContainer = document.getElementById('chatMessages');
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function hideTypingIndicator() {
+            const typingIndicator = document.getElementById('typingIndicator');
+            typingIndicator.classList.remove('active');
+        }
+
+        // Handle Enter key in chat input
+        document.getElementById('chatInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        // Auto-resize textarea
+        document.getElementById('chatInput').addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 80) + 'px';
+        });
+
+        // Close chat on overlay click
+        document.getElementById('chatOverlay').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeLiveChat();
+            }
+        });
+
+        function toggleFAQ(element) {
+            const answer = element.nextElementSibling;
+            const toggle = element.querySelector('.faq-toggle');
+            
+            if (answer.classList.contains('active')) {
+                answer.classList.remove('active');
+                toggle.classList.remove('active');
+                toggle.textContent = '+';
+            } else {
+                // Close all other FAQ items
+                document.querySelectorAll('.faq-answer.active').forEach(item => {
+                    item.classList.remove('active');
+                });
+                document.querySelectorAll('.faq-toggle.active').forEach(item => {
+                    item.classList.remove('active');
+                    item.textContent = '+';
+                });
+
+                // Open clicked FAQ item
+                answer.classList.add('active');
+                toggle.classList.add('active');
+                toggle.textContent = '×';
+            }
+        }
+    </script>
+</body>
+</html>
