@@ -265,55 +265,8 @@
                         </div>
                     </div>
 
-                    <!-- Trading Panel -->
-                    <!-- <div class="trading-panel">
-                        <h3 style="color: #FF8C00; margin-bottom: 20px;">Place Order</h3>
-                        
-                        <div class="balance-info">
-                            <div class="balance-item">
-                                <span class="balance-label">Available Balance:</span>
-                                <span class="balance-value">$8,750.00</span>
-                            </div>
-                            <div class="balance-item">
-                                <span class="balance-label">BTC Holdings:</span>
-                                <span class="balance-value">0.2074 BTC</span>
-                            </div>
-                        </div>
-
-                        <form class="trade-form" id="tradeForm">
-                            <div class="form-group">
-                                <label class="form-label">Trading Pair</label>
-                                <select class="form-select" id="tradingPair">
-                                    <option value="BTCUSD">BTC/USD</option>
-                                    <option value="ETHUSD">ETH/USD</option>
-                                    <option value="USDTUSD">USDT/USD</option>
-                                </select>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label">Order Type</label>
-                                <select class="form-select" id="orderType">
-                                    <option value="market">Market Order</option>
-                                    <option value="limit">Limit Order</option>
-                                </select>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label">Amount (USD)</label>
-                                <input type="number" class="form-input" id="amount" placeholder="Enter amount" min="10" step="0.01">
-                            </div>
-
-                            <div class="form-group" id="limitPriceGroup" style="display: none;">
-                                <label class="form-label">Limit Price</label>
-                                <input type="number" class="form-input" id="limitPrice" placeholder="Enter limit price" step="0.01">
-                            </div>
-
-                            <div class="trade-buttons">
-                                <button type="button" class="btn-buy" onclick="placeTrade('buy')">BUY</button>
-                                <button type="button" class="btn-sell" onclick="placeTrade('sell')">SELL</button>
-                            </div>
-                        </form>
-                    </div> -->
+        
+                   
                 </div>
             </div>
         </main>
@@ -325,8 +278,8 @@
         // Initialize TradingView Widget
         document.addEventListener('DOMContentLoaded', function() {
             new TradingView.widget({
-                "width": "100%",
-                "height": "100%",
+                "width": "1000",
+                "height": "600",
                 "symbol": "BINANCE:BTCUSD",
                 "interval": "1",
                 "timezone": "Etc/UTC",
