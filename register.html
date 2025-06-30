@@ -4,8 +4,6 @@
   <meta charset="UTF-8" />
   <title>Register - Bayya Bitcoin</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-
-  <!-- Favicon & Logo CSS -->
   <link rel="shortcut icon" href="images/favicon.png">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 
@@ -102,6 +100,9 @@
         <input type="email" id="email" class="form-control" placeholder="Email Address" required />
       </div>
       <div class="form-group">
+        <input type="tel" id="phone" class="form-control" placeholder="Phone Number" required />
+      </div>
+      <div class="form-group">
         <input type="password" id="password" class="form-control" placeholder="Password" required />
       </div>
       <button type="submit" class="btn btn-primary btn-block">Register</button>
@@ -109,7 +110,7 @@
     </form>
   </div>
 
-  <!-- Firebase (Compat version) -->
+  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-firestore-compat.js"></script>
 
@@ -125,37 +126,44 @@
       measurementId: "G-CMJPS8XHF2"
     };
 
-    // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // Form Submission
-    document.getElementById("registerForm").addEventListener("submit", async function(e) {
+    // Register Form Logic
+    document.getElementById("registerForm").addEventListener("submit", async function (e) {
       e.preventDefault();
 
       const name = document.getElementById("name").value.trim();
       const email = document.getElementById("email").value.trim();
+      const phone = document.getElementById("phone").value.trim();
       const password = document.getElementById("password").value.trim();
 
-      if (!name || !email || !password) {
+      if (!name || !email || !phone || !password) {
         alert("Please fill all fields.");
         return;
       }
 
       try {
+        const query = await db.collection("users").where("email", "==", email).get();
+
+        if (!query.empty) {
+          alert("This email is already registered. Please use a different one.");
+          return;
+        }
+
         await db.collection("users").add({
           name,
           email,
+          phone,
           password,
           confirmed: false,
           timestamp: firebase.firestore.FieldValue.serverTimestamp()
         });
 
-        // Redirect to login page immediately
         window.location.href = "login.html";
       } catch (error) {
-        console.error("Error during registration:", error);
-        alert("Registration failed. Try again.");
+        console.error("Registration Error:", error);
+        alert("Something went wrong. Please try again.");
       }
     });
   </script>

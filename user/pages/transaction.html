@@ -110,10 +110,10 @@
         <main class="main-content">
             <header class="header">
                 <h1>Transaction History</h1>
-                <div class="user-info">
-                    <span>Welcome, John Doe</span>
-                    <div class="user-avatar">JD</div>
-                </div>
+                 <div class="user-info">
+            <span id="welcomeText">Welcome, User</span>
+            <div class="user-avatar" id="userAvatar">U</div>
+            </div>
             </header>
 
             <div class="dashboard-content">
@@ -179,5 +179,56 @@
     </div>
 
     <script src="../assets/js/script.js"></script>
+    <!-- Firebase Compat Scripts -->
+<script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-firestore-compat.js"></script>
+
+<script>
+  // Firebase config (use your existing config)
+  const firebaseConfig = {
+    apiKey: "AIzaSyDqs938UtvScxCz_p2eANLJuVbTjHZKPoI",
+    authDomain: "bitcoin-site-8b190.firebaseapp.com",
+    projectId: "bitcoin-site-8b190",
+    storageBucket: "bitcoin-site-8b190.appspot.com",
+    messagingSenderId: "548765450635",
+    appId: "1:548765450635:web:3a21f3fefefb117207ef8e",
+    measurementId: "G-CMJPS8XHF2"
+  };
+
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+
+  // Get logged-in user's email from localStorage (from login script)
+  const userEmail = localStorage.getItem("userEmail");
+
+  if (userEmail) {
+    db.collection("users")
+      .where("email", "==", userEmail)
+      .get()
+      .then(snapshot => {
+        if (!snapshot.empty) {
+          const userData = snapshot.docs[0].data();
+          const fullName = userData.name || "User";
+          const initials = fullName
+            .split(" ")
+            .map(word => word[0].toUpperCase())
+            .join("")
+            .substring(0, 2); // Only first two initials
+
+          document.getElementById("welcomeText").textContent = `Welcome, ${fullName}`;
+          document.getElementById("userAvatar").textContent = initials;
+        } else {
+          console.warn("User data not found.");
+        }
+      })
+      .catch(error => {
+        console.error("Error fetching user info:", error);
+      });
+  } else {
+    // Optionally redirect to login if not logged in
+    window.location.href = "login.html";
+  }
+</script>
 </body>
 </html>
