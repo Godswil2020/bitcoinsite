@@ -140,6 +140,85 @@
                 height: 400px;
             }
         }
+
+        
+
+
+/* Hide dashboard title on mobile */
+@media (max-width: 768px) {
+  .header h1 {
+    display: none;
+  }
+
+  /* Style and show the mobile menu toggle */
+  .mobile-menu-toggle {
+    display: block;
+    position: relative;
+    margin: 10px 0 15px auto;
+    font-size: 28px;
+    background: transparent;
+    border: none;
+    color: orange;
+    cursor: pointer;
+    padding: 5px 15px;
+  }
+
+  /* Mobile menu hidden by default */
+  .mobile-menu {
+    display: none;
+    background-color: #111;
+    position: fixed;
+    top: 60px;  /* adjust according to your header height */
+    left: 0;
+    width: 250px;
+    height: calc(100vh - 60px);
+    overflow-y: auto;
+    z-index: 10000;
+    padding-top: 20px;
+    transition: transform 0.3s ease-in-out;
+    box-shadow: 2px 0 12px rgba(0,0,0,0.8);
+  }
+
+  /* Show menu when active */
+  .mobile-menu.active {
+    display: block;
+  }
+
+  /* Sidebar menu style inside mobile menu */
+  .mobile-menu .sidebar-menu {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+  }
+
+  .mobile-menu .menu-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    color: #fff;
+    text-decoration: none;
+    border-bottom: 1px solid #222;
+  }
+
+  .mobile-menu .menu-item:hover {
+    background-color: #222;
+  }
+
+  .mobile-menu .icon {
+    margin-right: 10px;
+    font-size: 18px;
+  }
+}
+
+/* Hide the mobile menu toggle and menu on desktop */
+@media (min-width: 769px) {
+  .mobile-menu-toggle,
+  .mobile-menu {
+    display: none !important;
+  }
+}
+
+
     </style>
 </head>
 <body>
@@ -176,8 +255,28 @@
             <span id="welcomeText">Welcome, User</span>
             <div class="user-avatar" id="userAvatar">U</div>
             </div>
+<!-- MOBILE MENU TOGGLE BUTTON (visible only on mobile) -->
+  <button id="mobileMenuToggle" class="mobile-menu-toggle">☰</button>
 
+  <!-- MOBILE MENU (hidden by default) -->
+  <nav id="mobileMenu" class="mobile-menu">
+    <ul class="sidebar-menu">
+      <li><a href="index.html" class="menu-item active"><span class="icon">📊</span><span class="text">Dashboard</span></a></li>
+      <li><a href="pages/transaction.html" class="menu-item"><span class="icon">📋</span><span class="text">Transaction History</span></a></li>
+      <li><a href="pages/live-trade.html" class="menu-item"><span class="icon">📈</span><span class="text">Live Trade</span></a></li>
+      <li><a href="pages/deposit.html" class="menu-item"><span class="icon">💰</span><span class="text">Deposit Investment</span></a></li>
+      <li><a href="pages/withdrawal.html" class="menu-item"><span class="icon">💳</span><span class="text">Withdrawal Investment</span></a></li>
+      <li><a href="pages/top-up.html" class="menu-item"><span class="icon">⬆️</span><span class="text">Top-up Investment</span></a></li>
+      <li><a href="pages/profile.html" class="menu-item"><span class="icon">👤</span><span class="text">Profile</span></a></li>
+      <li><a href="pages/referral.html" class="menu-item"><span class="icon">🔗</span><span class="text">Referral</span></a></li>
+      <li><a href="pages/support.html" class="menu-item"><span class="icon">💬</span><span class="text">Support</span></a></li>
+      <li><a href="pages/logout.html" class="menu-item"><span class="icon">🚪</span><span class="text">Logout</span></a></li>
+    </ul>
+  </nav>
             </header>
+            
+
+  
 
             <div class="dashboard-content">
                 <!-- Overview Cards -->
@@ -302,8 +401,9 @@
 <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-firestore-compat.js"></script>
 
+
 <script>
-  // Firebase config (use your existing config)
+  // Firebase config
   const firebaseConfig = {
     apiKey: "AIzaSyDqs938UtvScxCz_p2eANLJuVbTjHZKPoI",
     authDomain: "bitcoin-site-8b190.firebaseapp.com",
@@ -318,7 +418,7 @@
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
 
-  // Get logged-in user's email from localStorage (from login script)
+  // Get logged-in user's email from localStorage
   const userEmail = localStorage.getItem("userEmail");
 
   if (userEmail) {
@@ -328,15 +428,50 @@
       .then(snapshot => {
         if (!snapshot.empty) {
           const userData = snapshot.docs[0].data();
+
+          // === Update welcome text & initials ===
           const fullName = userData.name || "User";
           const initials = fullName
             .split(" ")
-            .map(word => word[0].toUpperCase())
+            .map(word => word[0]?.toUpperCase())
             .join("")
-            .substring(0, 2); // Only first two initials
+            .substring(0, 2);
 
-          document.getElementById("welcomeText").textContent = `Welcome, ${fullName}`;
-          document.getElementById("userAvatar").textContent = initials;
+          const welcomeTextEl = document.getElementById("welcomeText");
+          const userAvatarEl = document.getElementById("userAvatar");
+
+          if (welcomeTextEl) welcomeTextEl.textContent = `Welcome, ${fullName}`;
+          if (userAvatarEl) userAvatarEl.textContent = initials;
+
+          // === Update dashboard card values ===
+          const overviewCards = document.querySelectorAll(".overview-card");
+          overviewCards.forEach((card, index) => {
+            const valueElem = card.querySelector(".card-value");
+
+            switch (index) {
+              case 0:
+                valueElem.textContent = `$ ${userData.walletBalance || 0}`;
+                break;
+              case 1:
+                valueElem.textContent = `$ ${userData.investedAmount || 0}`;
+                break;
+              case 2:
+                valueElem.textContent = userData.accountStatus || "Pending";
+                break;
+              case 3:
+                valueElem.textContent = userData.accountType || "None";
+                break;
+              case 4:
+                valueElem.textContent = `$ ${userData.withdrawalTotal || 0}`;
+                break;
+              case 5:
+                valueElem.textContent = `$ ${userData.referralBonus || 0}`;
+                break;
+              case 6:
+                valueElem.textContent = `${userData.totalReferred || 0}`;
+                break;
+            }
+          });
         } else {
           console.warn("User data not found.");
         }
@@ -345,10 +480,19 @@
         console.error("Error fetching user info:", error);
       });
   } else {
-    // Optionally redirect to login if not logged in
+    // Redirect if not logged in
     window.location.href = "login.html";
   }
 </script>
+
+<script>const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+const mobileMenu = document.getElementById('mobileMenu');
+
+mobileMenuToggle.addEventListener('click', () => {
+  mobileMenu.classList.toggle('active');
+});
+</script>
+
 
 </body>
 </html>

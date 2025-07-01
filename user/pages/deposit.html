@@ -223,6 +223,85 @@
                 padding: 20px;
             }
         }
+
+
+
+
+
+        /* Hide dashboard title on mobile */
+@media (max-width: 768px) {
+   .header h1 {
+    display: none;
+  } 
+
+  /* Style and show the mobile menu toggle */
+  .mobile-menu-toggle {
+    display: block;
+    position: relative;
+    margin: 10px 0 15px auto;
+    font-size: 28px;
+    background: transparent;
+    border: none;
+    color: orange;
+    cursor: pointer;
+    padding: 5px 15px;
+  }
+
+  /* Mobile menu hidden by default */
+  .mobile-menu {
+    display: none;
+    background-color: #111;
+    position: fixed;
+    top: 60px;  /* adjust according to your header height */
+    left: 0;
+    width: 250px;
+    height: calc(100vh - 60px);
+    overflow-y: auto;
+    z-index: 10000;
+    padding-top: 20px;
+    transition: transform 0.3s ease-in-out;
+    box-shadow: 2px 0 12px rgba(0,0,0,0.8);
+  }
+
+  /* Show menu when active */
+  .mobile-menu.active {
+    display: block;
+  }
+
+  /* Sidebar menu style inside mobile menu */
+  .mobile-menu .sidebar-menu {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+  }
+
+  .mobile-menu .menu-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    color: #fff;
+    text-decoration: none;
+    border-bottom: 1px solid #222;
+  }
+
+  .mobile-menu .menu-item:hover {
+    background-color: #222;
+  }
+
+  .mobile-menu .icon {
+    margin-right: 10px;
+    font-size: 18px;
+  }
+}
+
+/* Hide the mobile menu toggle and menu on desktop */
+@media (min-width: 769px) {
+  .mobile-menu-toggle,
+  .mobile-menu {
+    display: none !important;
+  }
+}
+
     </style>
 </head>
 <body>
@@ -258,6 +337,24 @@
             <span id="welcomeText">Welcome, User</span>
             <div class="user-avatar" id="userAvatar">U</div>
             </div>
+            <!-- MOBILE MENU TOGGLE BUTTON (visible only on mobile) -->
+  <button id="mobileMenuToggle" class="mobile-menu-toggle">☰</button>
+
+  <!-- MOBILE MENU (hidden by default) -->
+  <nav id="mobileMenu" class="mobile-menu">
+    <ul class="sidebar-menu">
+      <li><a href="../index.html" class="menu-item active"><span class="icon">📊</span><span class="text">Dashboard</span></a></li>
+      <li><a href="./transaction.html" class="menu-item"><span class="icon">📋</span><span class="text">Transaction History</span></a></li>
+      <li><a href="./live-trade.html" class="menu-item"><span class="icon">📈</span><span class="text">Live Trade</span></a></li>
+      <li><a href="./deposit.html" class="menu-item"><span class="icon">💰</span><span class="text">Deposit Investment</span></a></li>
+      <li><a href="./withdrawal.html" class="menu-item"><span class="icon">💳</span><span class="text">Withdrawal Investment</span></a></li>
+      <li><a href="./top-up.html" class="menu-item"><span class="icon">⬆️</span><span class="text">Top-up Investment</span></a></li>
+      <li><a href="./profile.html" class="menu-item"><span class="icon">👤</span><span class="text">Profile</span></a></li>
+      <li><a href="./referral.html" class="menu-item"><span class="icon">🔗</span><span class="text">Referral</span></a></li>
+      <li><a href="./support.html" class="menu-item"><span class="icon">💬</span><span class="text">Support</span></a></li>
+      <li><a href="./logout.html" class="menu-item"><span class="icon">🚪</span><span class="text">Logout</span></a></li>
+    </ul>
+  </nav>
             </header>
 
             <div class="dashboard-content">
@@ -272,7 +369,7 @@
                     <!-- Basic Package -->
                     <div class="package-card">
                         <div class="package-name">Basic</div>
-                        <div class="package-price">$100</div>
+                        <div class="package-price">$200</div>
                         <div class="package-currency">Minimum Investment</div>
                         <div class="package-duration">30 Days Duration</div>
                         
@@ -284,13 +381,13 @@
                             <li>Email Notifications</li>
                         </ul>
                         
-                        <button class="package-button" onclick="selectPackage('basic', 100)">Get Started</button>
+                        <button class="package-button" onclick="selectPackage('basic', 200)">Get Started</button>
                     </div>
 
                     <!-- Silver Package -->
                     <div class="package-card">
                         <div class="package-name">Silver</div>
-                        <div class="package-price">$300</div>
+                        <div class="package-price">$5000</div>
                         <div class="package-currency">Minimum Investment</div>
                         <div class="package-duration">45 Days Duration</div>
                         
@@ -303,13 +400,13 @@
                             <li>Risk Management Tools</li>
                         </ul>
                         
-                        <button class="package-button" onclick="selectPackage('silver', 300)">Get Started</button>
+                        <button class="package-button" onclick="selectPackage('silver', 5000)">Get Started</button>
                     </div>
 
                     <!-- Business Package -->
                     <div class="package-card popular">
                         <div class="package-name">Business</div>
-                        <div class="package-price">$500</div>
+                        <div class="package-price">$15000</div>
                         <div class="package-currency">Minimum Investment</div>
                         <div class="package-duration">60 Days Duration</div>
                         
@@ -323,13 +420,13 @@
                             <li>Personal Account Manager</li>
                         </ul>
                         
-                        <button class="package-button" onclick="selectPackage('business', 500)">Get Started</button>
+                        <button class="package-button" onclick="selectPackage('business', 15000)">Get Started</button>
                     </div>
 
                     <!-- Premium Package -->
                     <div class="package-card">
                         <div class="package-name">Premium</div>
-                        <div class="package-price">$1,000</div>
+                        <div class="package-price">$35,000</div>
                         <div class="package-currency">Minimum Investment</div>
                         <div class="package-duration">90 Days Duration</div>
                         
@@ -344,7 +441,7 @@
                             <li>Exclusive Market Insights</li>
                         </ul>
                         
-                        <button class="package-button" onclick="selectPackage('premium', 1000)">Get Started</button>
+                        <button class="package-button" onclick="selectPackage('premium', 35000)">Get Started</button>
                     </div>
                 </div>
 
@@ -467,6 +564,13 @@
     // Optionally redirect to login if not logged in
     window.location.href = "login.html";
   }
+</script>
+<script>const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+const mobileMenu = document.getElementById('mobileMenu');
+
+mobileMenuToggle.addEventListener('click', () => {
+  mobileMenu.classList.toggle('active');
+});
 </script>
 </body>
 </html>
