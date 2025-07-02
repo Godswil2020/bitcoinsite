@@ -317,6 +317,48 @@
     font-size: 18px;
   }
 }
+.payment-update-notice {
+    width: 100%;
+    background: linear-gradient(135deg, rgba(255,140,0,0.1), rgba(255,255,255,0.02));
+    border: 1px solid rgba(255, 140, 0, 0.25);
+    border-radius: 12px;
+    padding: 30px;
+    color: #ffffff;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    margin-bottom: 30px;
+    box-sizing: border-box;
+}
+
+.notice-title {
+    font-size: 22px;
+    font-weight: 600;
+    color: #FF8C00;
+    margin-bottom: 16px;
+    text-align: center;
+}
+
+.notice-text {
+    font-size: 15px;
+    line-height: 1.7;
+    color: #cccccc;
+    text-align: center;
+    margin-bottom: 12px;
+}
+
+@media (max-width: 768px) {
+    .payment-update-notice {
+        padding: 20px;
+    }
+
+    .notice-title {
+        font-size: 18px;
+    }
+
+    .notice-text {
+        font-size: 14px;
+    }
+}
+
 
 /* Hide the mobile menu toggle and menu on desktop */
 @media (min-width: 769px) {
@@ -393,42 +435,39 @@
                         <!-- Selected Package Display -->
                         <div class="selected-package" id="selectedPackage">
                             <div class="package-info">
-                                <h3>Selected Package</h3>
-                                <p>Choose a package from the deposit page</p>
+                            <h3 id="displayPlan">Selected Package</h3>
+                            <p>Choose a package from the deposit page</p>
                             </div>
-                            <div class="package-amount">$0</div>
+                            <div class="package-amount" id="displayAmount">$0</div>
                         </div>
 
                         <form id="topupForm">
                             <div class="form-row">
-                                <div class="form-group">
-                                    <label class="form-label">Investment Plan</label>
-                                    <select class="form-select" id="investmentPlan" required>
-                                        <option value="">Select Plan</option>
-                                        <option value="basic">Basic Plan</option>
-                                        <option value="silver">Silver Plan</option>
-                                        <option value="business">Business Plan</option>
-                                        <option value="premium">Premium Plan</option>
-                                    </select>
-                                </div>
-
-                                <div class="form-group">
-                                    <label class="form-label">Investment Amount</label>
-                                    <div class="amount-input">
-                                        <span class="currency-symbol">$</span>
-                                        <input type="number" class="form-input" id="amount" placeholder="Enter amount" min="100" step="0.01" required>
-                                    </div>
-                                </div>
+                        <div class="form-group">
+                            <label class="form-label">Investment Plan</label>
+                            <select class="form-select" id="investmentPlan" required>
+                            <option value="">Select Plan</option>
+                            <option value="basic">Basic Plan</option>
+                            <option value="silver">Silver Plan</option>
+                            <option value="business">Business Plan</option>
+                            <option value="premium">Premium Plan</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Investment Amount</label>
+                            <div class="amount-input">
+                            <span class="currency-symbol">$</span>
+                            <input type="number" class="form-input" id="amount" placeholder="Enter amount" min="100" step="0.01" readonly>
                             </div>
+                        </div>
+                        </div>
 
                             <div class="form-group">
                                 <label class="form-label">Payment Method</label>
                                 <select class="form-select" id="paymentMethod" required>
                                     <option value="">Select Payment Method</option>
                                     <option value="bitcoin">Bitcoin (BTC)</option>
-                                    <option value="ethereum">Ethereum (ETH)</option>
-                                    <option value="usdt">Tether (USDT)</option>
-                                    <option value="litecoin">Litecoin (LTC)</option>
+                                    
                                 </select>
                             </div>
 
@@ -461,9 +500,27 @@
                                 Confirm Investment
                             </button>
                         </form>
+
+                    
+
                     </div>
                 </div>
             </div>
+
+            <!-- Payment Gateway Update Notice -->
+<div class="payment-update-notice">
+  <h2 class="notice-title">We're Updating Our Payment Gateway</h2>
+  <p class="notice-text">
+    We’re currently making important updates to our payment system to serve you better. We sincerely apologize for any inconvenience.
+  </p>
+  <p class="notice-text">
+    If you wish to make a payment for any investment package, please head over to the <strong>Support</strong> page using the navigation bar and click on <strong>Live Chat</strong> to speak directly with our support team.
+  </p>
+  <p class="notice-text">
+    Our support team will guide you through completing your investment payment safely and securely.
+  </p>
+</div>
+
         </main>
     </div>
 
@@ -471,10 +528,7 @@
     <script>
         // Wallet addresses for different cryptocurrencies
         const walletAddresses = {
-            bitcoin: '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa',
-            ethereum: '0x742b15a6b1CDbF8b0c44a1E8fC1EA5b81b04b6BA',
-            usdt: 'TQN9Y2khyLdBqEhQJMKkv7QV4p3iZM4nKd',
-            litecoin: 'LTC1a1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa'
+            bitcoin: 'bc1qshmc0vvmm5k0uxy2fgy87gkjdwa83k2rmxkf88',
         };
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -522,23 +576,33 @@
         }
 
         function updateMinAmount() {
-            const plan = document.getElementById('investmentPlan').value;
-            const amountInput = document.getElementById('amount');
-            
-            const minAmounts = {
-                basic: 100,
-                silver: 300,
-                business: 500,
-                premium: 1000
-            };
+  const plan = document.getElementById('investmentPlan').value;
+  const amountInput = document.getElementById('amount');
+  const selectedPackage = document.getElementById('selectedPackage');
 
-            if (plan && minAmounts[plan]) {
-                amountInput.min = minAmounts[plan];
-                if (parseFloat(amountInput.value) < minAmounts[plan]) {
-                    amountInput.value = minAmounts[plan];
-                }
-            }
-        }
+  const minAmounts = {
+    basic: 100,
+    silver: 300,
+    business: 500,
+    premium: 1000
+  };
+
+  if (plan && minAmounts[plan]) {
+    const minAmount = minAmounts[plan];
+    amountInput.min = minAmount;
+    amountInput.value = minAmount;
+
+    // Update the entire selected package display
+    selectedPackage.innerHTML = `
+      <div class="package-info">
+        <h3>${plan.charAt(0).toUpperCase() + plan.slice(1)} Package</h3>
+        <p>Minimum investment amount</p>
+      </div>
+      <div class="package-amount">$${minAmount}</div>
+    `;
+  }
+}
+
 
         function copyWalletAddress() {
             const walletAddress = document.getElementById('walletAddress').textContent;

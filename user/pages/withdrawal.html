@@ -412,14 +412,14 @@
                         <!-- Available Balance -->
                         <div class="balance-display">
                             <div class="balance-label">Available Balance</div>
-                            <div class="balance-amount">$8,750.00</div>
+                            <div class="balance-amount">$00.00</div>
                         </div>
 
                         <form id="withdrawalForm">
                             <div class="form-row">
                                 <div class="form-group">
                                     <label class="form-label">Full Name</label>
-                                    <input type="text" class="form-input" id="fullName" value="John Doe" required>
+                                    <input type="text" class="form-input" id="fullName"  required>
                                 </div>
 
                                 <div class="form-group">
@@ -497,29 +497,10 @@
                     <div class="withdrawal-history">
                         <h2 class="history-title">Recent Withdrawals</h2>
                         
-                        <div class="history-item">
-                            <div class="history-details">
-                                <h4>Bitcoin Withdrawal - $300.00</h4>
-                                <p>Dec 25, 2024 8:45 AM</p>
-                            </div>
-                            <div class="history-status status-pending">Pending</div>
-                        </div>
+                        
+                        
 
-                        <div class="history-item">
-                            <div class="history-details">
-                                <h4>USDT Withdrawal - $150.00</h4>
-                                <p>Dec 22, 2024 3:20 PM</p>
-                            </div>
-                            <div class="history-status status-completed">Completed</div>
-                        </div>
-
-                        <div class="history-item">
-                            <div class="history-details">
-                                <h4>Ethereum Withdrawal - $450.00</h4>
-                                <p>Dec 18, 2024 11:30 AM</p>
-                            </div>
-                            <div class="history-status status-processing">Processing</div>
-                        </div>
+                        
                     </div>
                 </div>
             </div>
@@ -692,6 +673,199 @@ const mobileMenu = document.getElementById('mobileMenu');
 mobileMenuToggle.addEventListener('click', () => {
   mobileMenu.classList.toggle('active');
 });
+
+
+
+
+
+// The withdrawal history data
+let userBalance = 0;
+let userDocRef = null; // Will hold the reference to the user's document
+
+const amountInput = document.getElementById("amount");
+const withdrawalAmountDisplay = document.getElementById("withdrawalAmount");
+const processingFeeDisplay = document.getElementById("processingFee");
+const networkFeeDisplay = document.getElementById("networkFee");
+const finalAmountDisplay = document.getElementById("finalAmount");
+const availableBalanceDisplay = document.querySelector(".balance-amount");
+const form = document.getElementById("withdrawalForm");
+const submitButton = document.getElementById("submitButton");
+
+const NETWORK_FEE = 5;
+const PROCESSING_PERCENT = 0.02;
+
+// Fetch balance on load
+async function fetchWalletBalance() {
+  try {
+    if (!userEmail) return;
+    const snapshot = await db.collection("users").where("email", "==", userEmail).get();
+    if (!snapshot.empty) {
+      const userDoc = snapshot.docs[0];
+      const userData = userDoc.data();
+      userDocRef = userDoc.ref;
+      userBalance = parseFloat(userData.walletBalance || 0);
+      availableBalanceDisplay.textContent = `$${userBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
+    }
+  } catch (err) {
+    console.error("Error fetching wallet balance:", err);
+  }
+}
+
+// Set max amount
+function setMaxAmount() {
+  amountInput.value = userBalance.toFixed(2);
+  updateFeeBreakdown();
+}
+window.setMaxAmount = setMaxAmount;
+
+// Fee calculations
+function updateFeeBreakdown() {
+  const amount = parseFloat(amountInput.value) || 0;
+  const processingFee = +(amount * PROCESSING_PERCENT).toFixed(2);
+  const finalAmount = +(amount - processingFee - NETWORK_FEE).toFixed(2);
+
+  withdrawalAmountDisplay.textContent = `$${amount.toFixed(2)}`;
+  processingFeeDisplay.textContent = `$${processingFee.toFixed(2)}`;
+  networkFeeDisplay.textContent = `$${NETWORK_FEE.toFixed(2)}`;
+  finalAmountDisplay.textContent = finalAmount > 0 ? `$${finalAmount.toFixed(2)}` : "$0.00";
+}
+
+amountInput.addEventListener("input", updateFeeBreakdown);
+
+// Submit handler
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  submitButton.disabled = true;
+  submitButton.textContent = "Processing...";
+
+  const fullName = document.getElementById("fullName").value.trim();
+  const country = document.getElementById("country").value;
+  const method = document.getElementById("withdrawalMethod").value;
+  const amount = parseFloat(amountInput.value);
+  const walletAddress = document.getElementById("walletAddress").value.trim();
+
+  if (!userEmail || !fullName || !country || !method || !walletAddress || isNaN(amount)) {
+    alert("Please fill in all fields correctly.");
+    return resetSubmit();
+  }
+
+  if (amount < 50) {
+    alert("Minimum withdrawal is $50.");
+    return resetSubmit();
+  }
+
+  if (amount > userBalance) {
+    alert("You cannot withdraw more than your available balance.");
+    return resetSubmit();
+  }
+
+  try {
+    // Step 1: Create withdrawal request
+    const withdrawalData = {
+      userEmail: userEmail,
+      fullName,
+      country,
+      withdrawalMethod: method,
+      amount,
+      walletAddress,
+      status: "pending",
+      timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    };
+
+    await db.collection("withdrawalRequests").add(withdrawalData);
+
+    // Step 2: Update user balance
+    const newBalance = userBalance - amount;
+    await userDocRef.update({
+      walletBalance: newBalance
+    });
+
+    alert("Withdrawal request submitted successfully!");
+
+    // Step 3: Reset
+    form.reset();
+    fetchWalletBalance();
+    updateFeeBreakdown();
+  } catch (err) {
+    console.error("Error submitting withdrawal:", err);
+    alert("Something went wrong. Try again.");
+  }
+
+  resetSubmit();
+});
+
+function resetSubmit() {
+  submitButton.disabled = false;
+  submitButton.textContent = "Request Withdrawal";
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  fetchWalletBalance();
+  updateFeeBreakdown();
+});
+   
+
+
+
+
+
+
+//    The Withdrawal History section 
+const withdrawalHistoryEl = document.querySelector('.withdrawal-history');
+
+if (userEmail) {
+  db.collection("withdrawalRequests")
+    .where("email", "==", userEmail)
+    .limit(10)
+    .get()
+    .then(snapshot => {
+      if (snapshot.empty) {
+        withdrawalHistoryEl.innerHTML += `
+          <div class="history-item">
+            <div class="history-details">
+              <h4>No withdrawals yet</h4>
+              <p>You haven't made any withdrawal requests.</p>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        const method = data.withdrawalMethod || 'Unknown';
+        const amount = data.amount || 0;
+        const status = data.status || 'Pending';
+        const date = data.timestamp?.toDate?.() || new Date();
+
+        let statusClass = 'status-pending';
+        if (status.toLowerCase() === 'completed') statusClass = 'status-completed';
+        else if (status.toLowerCase() === 'processing') statusClass = 'status-processing';
+
+        withdrawalHistoryEl.innerHTML += `
+          <div class="history-item">
+            <div class="history-details">
+              <h4>${method} Withdrawal - $${amount.toFixed(2)}</h4>
+              <p>${date.toLocaleString()}</p>
+            </div>
+            <div class="history-status ${statusClass}">${status}</div>
+          </div>
+        `;
+      });
+    })
+    .catch(err => {
+      console.error("History error:", err);
+      withdrawalHistoryEl.innerHTML += `
+        <div class="history-item">
+          <div class="history-details">
+            <h4>Error loading history</h4>
+            <p>${err.message}</p>
+          </div>
+        </div>
+      `;
+    });
+}
+
 </script>
 </body>
 </html>

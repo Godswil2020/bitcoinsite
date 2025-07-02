@@ -409,13 +409,10 @@
                         <form id="profileForm">
                             <div class="form-row">
                                 <div class="form-group">
-                                    <label class="form-label">First Name</label>
-                                    <input type="text" class="form-input" id="firstName" value="John" required>
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Last Name</label>
-                                    <input type="text" class="form-input" id="lastName" value="Doe" required>
-                                </div>
+                                    <label class="form-label">Full Name</label>
+                                    <input type="text" class="form-input" id="fullName" value="John Doe" required>
+                                    </div>      
+                                                                    
                             </div>
 
                             <div class="form-row">
@@ -455,7 +452,7 @@
                         </form>
                     </div>
 
-                    <!--
+                    
                 </div>
             </div>
         </main>
@@ -643,6 +640,118 @@ const mobileMenu = document.getElementById('mobileMenu');
 mobileMenuToggle.addEventListener('click', () => {
   mobileMenu.classList.toggle('active');
 });
+
+
+
+
+// for the profile page functionality to work
+// Declare references
+const fullNameInput = document.getElementById("fullName");
+const emailInput = document.getElementById("email");
+const phoneInput = document.getElementById("phone");
+const countrySelect = document.getElementById("country");
+const profileForm = document.getElementById("profileForm");
+
+// Profile header elements
+const profileNameDisplay = document.querySelector(".profile-name");
+const profileEmailDisplay = document.querySelector(".profile-email");
+const profileAvatarDisplay = document.querySelector(".profile-avatar");
+
+// To store original data for reset
+let originalProfileData = {};
+
+// Load user data
+async function loadUserProfile() {
+  if (!userEmail) return;
+
+  try {
+    const snapshot = await db.collection("users").where("email", "==", userEmail).get();
+    if (!snapshot.empty) {
+      const doc = snapshot.docs[0];
+      const data = doc.data();
+      const docId = doc.id;
+
+      // Fill form fields
+      fullNameInput.value = data.name || "";
+      emailInput.value = data.email || "";
+      phoneInput.value = data.phone || "";
+      countrySelect.value = data.country || "Other";
+
+      // Display in profile header
+      profileNameDisplay.textContent = data.name || "";
+      profileEmailDisplay.textContent = data.email || "";
+      profileAvatarDisplay.textContent = getInitials(data.name);
+
+      // Store for reset
+      originalProfileData = {
+        name: data.name || "",
+        email: data.email || "",
+        phone: data.phone || "",
+        country: data.country || "Other",
+        docId
+      };
+    }
+  } catch (err) {
+    console.error("Failed to load profile:", err);
+    alert("Unable to load profile data.");
+  }
+}
+
+// Get initials from full name (e.g., "John Doe" => "JD")
+function getInitials(fullName) {
+  if (!fullName) return "";
+  const names = fullName.trim().split(" ");
+  let initials = names[0].charAt(0).toUpperCase();
+  if (names.length > 1) {
+    initials += names[names.length - 1].charAt(0).toUpperCase();
+  }
+  return initials;
+}
+
+// Save profile changes
+profileForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  if (!originalProfileData.docId) return alert("Profile not loaded yet.");
+
+  const updatedData = {
+    name: fullNameInput.value.trim(),
+    email: emailInput.value.trim(),
+    phone: phoneInput.value.trim(),
+    country: countrySelect.value
+  };
+
+  try {
+    await db.collection("users").doc(originalProfileData.docId).update(updatedData);
+    alert("Profile updated successfully!");
+
+    // Update profile header
+    profileNameDisplay.textContent = updatedData.name;
+    profileEmailDisplay.textContent = updatedData.email;
+    profileAvatarDisplay.textContent = getInitials(updatedData.name);
+
+    // Update original data for reset
+    originalProfileData = { ...updatedData, docId: originalProfileData.docId };
+
+  } catch (err) {
+    console.error("Error updating profile:", err);
+    alert("Failed to update profile.");
+  }
+});
+
+// Reset form to original
+function resetForm() {
+  if (!originalProfileData) return;
+
+  fullNameInput.value = originalProfileData.name;
+  emailInput.value = originalProfileData.email;
+  phoneInput.value = originalProfileData.phone;
+  countrySelect.value = originalProfileData.country;
+}
+
+// Load profile on page load
+document.addEventListener("DOMContentLoaded", loadUserProfile);
+
 </script>
 </body>
 </html>
