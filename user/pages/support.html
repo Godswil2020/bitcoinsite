@@ -573,7 +573,7 @@
             
             <ul class="sidebar-menu">
                 <li><a href="../index.html" class="menu-item"><span class="icon">📊</span><span class="text">Dashboard</span></a></li>
-                <li><a href="transaction.html" class="menu-item"><span class="icon">📋</span><span class="text">Transaction History</span></a></li>
+                <!-- <li><a href="transaction.html" class="menu-item"><span class="icon">📋</span><span class="text">Transaction History</span></a></li> -->
                 <li><a href="live-trade.html" class="menu-item"><span class="icon">📈</span><span class="text">Live Trade</span></a></li>
                 <li><a href="deposit.html" class="menu-item"><span class="icon">💰</span><span class="text">Deposit Investment</span></a></li>
                 <li><a href="withdrawal.html" class="menu-item"><span class="icon">💳</span><span class="text">Withdrawal Investment</span></a></li>
@@ -600,7 +600,7 @@
   <nav id="mobileMenu" class="mobile-menu">
     <ul class="sidebar-menu">
       <li><a href="../index.html" class="menu-item active"><span class="icon">📊</span><span class="text">Dashboard</span></a></li>
-      <li><a href="./transaction.html" class="menu-item"><span class="icon">📋</span><span class="text">Transaction History</span></a></li>
+      <!-- <li><a href="./transaction.html" class="menu-item"><span class="icon">📋</span><span class="text">Transaction History</span></a></li> -->
       <li><a href="./live-trade.html" class="menu-item"><span class="icon">📈</span><span class="text">Live Trade</span></a></li>
       <li><a href="./deposit.html" class="menu-item"><span class="icon">💰</span><span class="text">Deposit Investment</span></a></li>
       <li><a href="./withdrawal.html" class="menu-item"><span class="icon">💳</span><span class="text">Withdrawal Investment</span></a></li>
@@ -801,146 +801,116 @@
 
     <script src="../assets/js/script.js"></script>
     <script>
-        // Initialize page
-        document.addEventListener('DOMContentLoaded', function() {
-            // Set welcome message time
-            const welcomeTime = document.getElementById('welcomeTime');
-            if (welcomeTime) {
-                welcomeTime.textContent = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-            }
-        });
+       // Initialize Firebase and Firestore as you already did
+// const db = firebase.firestore();
 
-        // Live Chat Functions
-        function openLiveChat() {
-            const chatOverlay = document.getElementById('chatOverlay');
-            chatOverlay.classList.add('active');
-            document.body.style.overflow = 'hidden';
-            
-            // Focus on input
-            setTimeout(() => {
-                document.getElementById('chatInput').focus();
-            }, 500);
-        }
 
-        function closeLiveChat() {
-            const chatOverlay = document.getElementById('chatOverlay');
-            chatOverlay.classList.remove('active');
-            document.body.style.overflow = 'auto';
-        }
 
-        function sendMessage() {
-            const input = document.getElementById('chatInput');
-            const message = input.value.trim();
-            
-            if (!message) return;
-            
-            // Add user message
-            addMessage(message, 'user');
-            input.value = '';
-            
-            // Show typing indicator
-            showTypingIndicator();
-            
-            // Simulate support response
-            setTimeout(() => {
-                hideTypingIndicator();
-                addSupportResponse(message);
-            }, 1500 + Math.random() * 2000);
-        }
+// Cache chat elements
+const chatMessages = document.getElementById('chatMessages');
+const chatInput = document.getElementById('chatInput');
 
-        function addMessage(text, sender) {
-            const messagesContainer = document.getElementById('chatMessages');
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${sender}`;
-            
-            const currentTime = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-            
-            messageDiv.innerHTML = `
-                <div class="message-avatar">${sender === 'user' ? 'JD' : 'PB'}</div>
-                <div>
-                    <div class="message-content">${text}</div>
-                    <div class="message-time">${currentTime}</div>
-                </div>
-            `;
-            
-            messagesContainer.insertBefore(messageDiv, document.getElementById('typingIndicator'));
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        }
+function openLiveChat() {
+  const chatOverlay = document.getElementById('chatOverlay');
+  chatOverlay.classList.add('active');
+  document.body.style.overflow = 'hidden';
 
-        function addSupportResponse(userMessage) {
-            const responses = [
-                "Thank you for contacting us! I'd be happy to help you with that. Can you provide more details about your specific situation?",
-                "I understand your concern. Let me check that information for you right away. This should only take a moment.",
-                "That's a great question! Based on your account, I can see that you're eligible for our premium support options. Would you like me to explain those?",
-                "I can definitely assist you with that. For your security, I'll need to verify some account details first. Can you confirm your registered email address?",
-                "Thank you for bringing this to my attention. I'm going to escalate this to our technical team for immediate review. You should expect a resolution within 24 hours.",
-                "I see you're interested in our investment packages. Based on your query, I'd recommend starting with our Silver package. Would you like me to explain the benefits?",
-                "That's concerning, and I apologize for any inconvenience. Let me pull up your account details to see how we can resolve this quickly for you.",
-                "Great! I'm glad you're interested in maximizing your investment returns. Our team has some excellent strategies that might work well for your situation."
-            ];
-            
-            const randomResponse = responses[Math.floor(Math.random() * responses.length)];
-            addMessage(randomResponse, 'support');
-        }
+  // Clear existing messages except welcome message
+  chatMessages.innerHTML = '';
 
-        function showTypingIndicator() {
-            const typingIndicator = document.getElementById('typingIndicator');
-            typingIndicator.classList.add('active');
-            
-            const messagesContainer = document.getElementById('chatMessages');
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        }
+  // Load previous messages from Firestore
+  loadMessages();
 
-        function hideTypingIndicator() {
-            const typingIndicator = document.getElementById('typingIndicator');
-            typingIndicator.classList.remove('active');
-        }
+  // Focus input
+  setTimeout(() => {
+    chatInput.focus();
+  }, 500);
+}
 
-        // Handle Enter key in chat input
-        document.getElementById('chatInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                sendMessage();
-            }
-        });
+function closeLiveChat() {
+  const chatOverlay = document.getElementById('chatOverlay');
+  chatOverlay.classList.remove('active');
+  document.body.style.overflow = 'auto';
 
-        // Auto-resize textarea
-        document.getElementById('chatInput').addEventListener('input', function() {
-            this.style.height = 'auto';
-            this.style.height = Math.min(this.scrollHeight, 80) + 'px';
-        });
+  // Optionally remove real-time listener to save resources
+  if (unsubscribeMessages) unsubscribeMessages();
+}
 
-        // Close chat on overlay click
-        document.getElementById('chatOverlay').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeLiveChat();
-            }
-        });
+// Add message element helper (no simulated support response here)
+function addMessage(text, sender, time) {
+  const messageDiv = document.createElement('div');
+  messageDiv.className = `message ${sender}`;
 
-        function toggleFAQ(element) {
-            const answer = element.nextElementSibling;
-            const toggle = element.querySelector('.faq-toggle');
-            
-            if (answer.classList.contains('active')) {
-                answer.classList.remove('active');
-                toggle.classList.remove('active');
-                toggle.textContent = '+';
-            } else {
-                // Close all other FAQ items
-                document.querySelectorAll('.faq-answer.active').forEach(item => {
-                    item.classList.remove('active');
-                });
-                document.querySelectorAll('.faq-toggle.active').forEach(item => {
-                    item.classList.remove('active');
-                    item.textContent = '+';
-                });
+  const avatar = sender === 'user' ? userEmail.charAt(0).toUpperCase() : 'PB';
+  const messageTime = time ? new Date(time.seconds * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-                // Open clicked FAQ item
-                answer.classList.add('active');
-                toggle.classList.add('active');
-                toggle.textContent = '×';
-            }
-        }
+  messageDiv.innerHTML = `
+    <div class="message-avatar">${avatar}</div>
+    <div>
+      <div class="message-content">${text}</div>
+      <div class="message-time">${messageTime}</div>
+    </div>
+  `;
+
+  chatMessages.appendChild(messageDiv);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+async function sendMessage() {
+  const message = chatInput.value.trim();
+  if (!message) return;
+
+  // Save message to Firestore
+  try {
+    await db.collection('messages').add({
+      userEmail: userEmail,
+      text: message,
+      sender: 'user',
+      timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    });
+  } catch (error) {
+    console.error('Error sending message:', error);
+  }
+
+  chatInput.value = '';
+}
+
+// Real-time listener unsubscribe function
+let unsubscribeMessages = null;
+
+function loadMessages() {
+  // Show the welcome message first (only once)
+  addMessage("Hello! Welcome to Profit Bit Investment Support. I'm here to help you with any questions about your investments, account, or our services. How can I assist you today?", 'support');
+
+  // Listen to messages for this user ordered by timestamp ascending
+  unsubscribeMessages = db.collection('messages')
+    .where('userEmail', '==', userEmail)
+    .orderBy('timestamp', 'asc')
+    .onSnapshot(snapshot => {
+      // Clear current user/support messages but keep welcome message
+      // Remove all but first message (the welcome message)
+      while (chatMessages.children.length > 1) {
+        chatMessages.removeChild(chatMessages.lastChild);
+      }
+
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        // Add only messages from Firestore (skip welcome message added above)
+        addMessage(data.text, data.sender, data.timestamp);
+      });
+    }, error => {
+      console.error('Error loading messages:', error);
+    });
+}
+
+// Send message on Enter key
+chatInput.addEventListener('keypress', function(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
+});
+
     </script>
     <!-- Firebase Compat Scripts -->
 <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-app-compat.js"></script>
