@@ -628,5 +628,379 @@
     renderWithdrawals();
   </script>
 
+  <!-- Firebase Compat Scripts -->
+<script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-firestore-compat.js"></script>
+
+<script>
+// Replace with your Firebase project config
+const firebaseConfig = {
+  apiKey: "AIzaSyDqs938UtvScxCz_p2eANLJuVbTjHZKPoI",
+  authDomain: "bitcoin-site-8b190.firebaseapp.com",
+  projectId: "bitcoin-site-8b190",
+  storageBucket: "bitcoin-site-8b190.appspot.com",
+  messagingSenderId: "548765450635",
+  appId: "1:548765450635:web:3a21f3fefefb117207ef8e",
+  measurementId: "G-CMJPS8XHF2"
+};
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+const adminEmail = 'profitbitinvestment@outlook.com';
+
+// Load all users from Firestore and display in sidebar
+async function loadUsers() {
+  userListEl.innerHTML = 'Loading users...';
+  try {
+    const snapshot = await db.collection('users').orderBy('fullName').get();
+    userListEl.innerHTML = '';
+
+    if (snapshot.empty) {
+      userListEl.textContent = 'No users found.';
+      return;
+    }
+
+    snapshot.forEach(doc => {
+      const user = { id: doc.id, ...doc.data() };
+      const div = document.createElement('div');
+      div.textContent = `${user.fullName} (${user.email})`;
+      div.dataset.userid = user.id;
+      div.addEventListener('click', () => selectUser(user, div));
+      userListEl.appendChild(div);
+    });
+  } catch (error) {
+    console.error('Error loading users:', error);
+    userListEl.textContent = 'Failed to load users.';
+  }
+}
+
+// When a user is selected, load their details and chats
+async function selectUser(user, divElement) {
+  selectedUser = user;
+  selectedUserDocId = user.id;
+
+  // Highlight selected user in sidebar
+  Array.from(userListEl.children).forEach(child => child.classList.remove('active'));
+  divElement.classList.add('active');
+
+  // Show user details section
+  userDetailsEl.style.display = 'flex';
+
+  // Fill user info into inputs
+  fullNameInput.value = user.fullName || '';
+  emailInput.value = user.email || '';
+  joinDateInput.value = user.joinDate || '';
+  accountStatusSelect.value = user.accountStatus || 'Confirmed';
+  accountTypeSelect.value = user.accountType || 'Basic';
+  walletBalanceInput.value = user.walletBalance ?? 0;
+  investedAmountInput.value = user.investedAmount ?? 0;
+  totalWithdrawalInput.value = user.totalWithdrawal ?? 0;
+  referralBonusInput.value = user.referralBonus ?? 0;
+
+  saveUserBtn.disabled = true;
+  sendChatBtn.disabled = false;
+
+  // Load chats from global messages collection
+  loadChats();
+}
+
+// Enable save button if fields changed
+function trackChanges() {
+  if (!selectedUser) return;
+
+  const changed =
+    fullNameInput.value.trim() !== selectedUser.fullName ||
+    accountStatusSelect.value !== selectedUser.accountStatus ||
+    accountTypeSelect.value !== selectedUser.accountType ||
+    Number(walletBalanceInput.value) !== (selectedUser.walletBalance ?? 0) ||
+    Number(investedAmountInput.value) !== (selectedUser.investedAmount ?? 0) ||
+    Number(totalWithdrawalInput.value) !== (selectedUser.totalWithdrawal ?? 0) ||
+    Number(referralBonusInput.value) !== (selectedUser.referralBonus ?? 0);
+
+  saveUserBtn.disabled = !changed;
+}
+
+// Save user info to Firestore
+saveUserBtn.addEventListener('click', async () => {
+  if (!selectedUserDocId) return;
+
+  try {
+    await db.collection('users').doc(selectedUserDocId).update({
+      fullName: fullNameInput.value.trim(),
+      accountStatus: accountStatusSelect.value,
+      accountType: accountTypeSelect.value,
+      walletBalance: Number(walletBalanceInput.value),
+      investedAmount: Number(investedAmountInput.value),
+      totalWithdrawal: Number(totalWithdrawalInput.value),
+      referralBonus: Number(referralBonusInput.value),
+    });
+
+    alert('User information updated successfully!');
+
+    // Update local user info so we track changes properly
+    selectedUser = {
+      ...selectedUser,
+      fullName: fullNameInput.value.trim(),
+      accountStatus: accountStatusSelect.value,
+      accountType: accountTypeSelect.value,
+      walletBalance: Number(walletBalanceInput.value),
+      investedAmount: Number(investedAmountInput.value),
+      totalWithdrawal: Number(totalWithdrawalInput.value),
+      referralBonus: Number(referralBonusInput.value),
+    };
+
+    saveUserBtn.disabled = true;
+
+    // Refresh the user list to show updated name
+    await loadUsers();
+  } catch (error) {
+    console.error('Error updating user:', error);
+    alert('Failed to update user info.');
+  }
+});
+
+// Add event listeners to track input changes
+[
+  fullNameInput,
+  accountStatusSelect,
+  accountTypeSelect,
+  walletBalanceInput,
+  investedAmountInput,
+  totalWithdrawalInput,
+  referralBonusInput,
+].forEach(el => el.addEventListener('input', trackChanges));
+
+// Load chat messages from global messages collection
+async function loadChats() {
+  chatMessages.innerHTML = 'Loading chats...';
+
+  if (!selectedUser || !selectedUser.email) {
+    chatMessages.textContent = 'No user selected.';
+    return;
+  }
+
+  try {
+    const userEmail = selectedUser.email;
+
+    // Query messages where (sender == userEmail and receiver == adminEmail) OR (sender == adminEmail and receiver == userEmail)
+    const messagesRef = db.collection('messages');
+
+    const userToAdminQuery = messagesRef
+      .where('senderEmail', '==', userEmail)
+      .where('receiverEmail', '==', adminEmail);
+
+    const adminToUserQuery = messagesRef
+      .where('senderEmail', '==', adminEmail)
+      .where('receiverEmail', '==', userEmail);
+
+    // Fetch both sets
+    const [userToAdminSnap, adminToUserSnap] = await Promise.all([
+      userToAdminQuery.get(),
+      adminToUserQuery.get()
+    ]);
+
+    // Combine and sort by timestamp
+    let allMessages = [];
+
+    userToAdminSnap.forEach(doc => {
+      allMessages.push({ id: doc.id, ...doc.data() });
+    });
+    adminToUserSnap.forEach(doc => {
+      allMessages.push({ id: doc.id, ...doc.data() });
+    });
+
+    allMessages.sort((a, b) => {
+      const t1 = a.timestamp?.toDate ? a.timestamp.toDate().getTime() : 0;
+      const t2 = b.timestamp?.toDate ? b.timestamp.toDate().getTime() : 0;
+      return t1 - t2;
+    });
+
+    chatMessages.innerHTML = '';
+
+    if (allMessages.length === 0) {
+      chatMessages.textContent = 'No chat messages yet.';
+      return;
+    }
+
+    allMessages.forEach(msg => {
+      const div = document.createElement('div');
+      div.style.marginBottom = '0.5rem';
+      div.style.padding = '0.4rem 0.6rem';
+      div.style.borderRadius = '5px';
+
+      const isAdmin = msg.senderEmail === adminEmail;
+      div.style.backgroundColor = isAdmin ? '#d1f7d6' : '#f1f1f1';
+      div.style.alignSelf = isAdmin ? 'flex-end' : 'flex-start';
+      div.style.maxWidth = '80%';
+
+      const timeStr = msg.timestamp && msg.timestamp.toDate
+        ? msg.timestamp.toDate().toLocaleString()
+        : '';
+
+      div.textContent = `[${isAdmin ? 'Admin' : 'User'} - ${timeStr}] ${msg.text}`;
+      chatMessages.appendChild(div);
+    });
+
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+
+  } catch (error) {
+    console.error('Error loading chats:', error);
+    chatMessages.textContent = 'Failed to load chat messages.';
+  }
+}
+
+// Send a chat message as admin
+sendChatBtn.addEventListener('click', async () => {
+  if (!selectedUser || !selectedUser.email) return;
+
+  const text = chatInput.value.trim();
+  if (!text) return;
+
+  const timestamp = firebase.firestore.FieldValue.serverTimestamp();
+
+  try {
+    await db.collection('messages').add({
+      senderEmail: adminEmail,
+      receiverEmail: selectedUser.email,
+      text,
+      timestamp,
+    });
+
+    chatInput.value = '';
+    loadChats();
+  } catch (error) {
+    console.error('Error sending message:', error);
+    alert('Failed to send message.');
+  }
+});
+
+// Support sending chat by pressing Enter (shift+Enter for newline)
+chatInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendChatBtn.click();
+  }
+});
+
+// Load withdrawal requests from Firestore, only pending ones
+async function loadWithdrawals() {
+  withdrawalList.innerHTML = 'Loading withdrawal requests...';
+
+  try {
+    const snapshot = await db.collection('withdrawalRequests')
+      .where('status', '==', 'pending')
+      .orderBy('timestamp', 'asc')
+      .get();
+
+    withdrawalList.innerHTML = '';
+
+    if (snapshot.empty) {
+      withdrawalList.textContent = 'No withdrawal requests pending.';
+      return;
+    }
+
+    // Use Promise.all with map to await all user fetches (better than forEach with async)
+    const withdrawalElements = await Promise.all(snapshot.docs.map(async doc => {
+      const request = { id: doc.id, ...doc.data() };
+
+      // Get user info for the withdrawal request
+      const userDoc = await db.collection('users').doc(request.userId).get();
+      if (!userDoc.exists) return null;
+
+      const user = userDoc.data();
+
+      const div = document.createElement('div');
+      div.className = 'withdrawal-item';
+
+      const timestampStr = request.timestamp && request.timestamp.toDate
+        ? request.timestamp.toDate().toLocaleString()
+        : '';
+
+      div.innerHTML = `
+        <div class="withdrawal-header">Withdrawal Request</div>
+        <div class="withdrawal-info">
+          <p><strong>User:</strong> ${user.fullName}</p>
+          <p><strong>Email:</strong> ${user.email}</p>
+          <p><strong>Amount ($):</strong> ${request.amount}</p>
+          <p class="withdrawal-timestamp"><em>Requested at: ${timestampStr}</em></p>
+        </div>
+        <button class="confirm-btn">Confirm Withdrawal</button>
+      `;
+
+      const btn = div.querySelector('button');
+      btn.addEventListener('click', () => confirmWithdrawal(request, user, div));
+
+      return div;
+    }));
+
+    withdrawalElements.forEach(div => {
+      if (div) withdrawalList.appendChild(div);
+    });
+
+  } catch (error) {
+    console.error('Error loading withdrawal requests:', error);
+    withdrawalList.textContent = 'Failed to load withdrawal requests.';
+  }
+}
+
+// Confirm a withdrawal request — update status to 'confirmed'
+async function confirmWithdrawal(request, user, domElement) {
+  if (!confirm(`Confirm withdrawal of $${request.amount} for ${user.fullName}?`)) return;
+
+  try {
+    const userRef = db.collection('users').doc(request.userId);
+    const withdrawalRef = db.collection('withdrawalRequests').doc(request.id);
+
+    // Use transaction to update withdrawal safely
+    await db.runTransaction(async (transaction) => {
+      const userDoc = await transaction.get(userRef);
+      if (!userDoc.exists) throw "User does not exist!";
+
+      const userData = userDoc.data();
+
+      const newTotalWithdrawal = (userData.totalWithdrawal ?? 0) + request.amount;
+      const newWalletBalance = Math.max(0, (userData.walletBalance ?? 0) - request.amount);
+
+      transaction.update(userRef, {
+        totalWithdrawal: newTotalWithdrawal,
+        walletBalance: newWalletBalance,
+      });
+
+      // Instead of deleting, update status field to 'confirmed'
+      transaction.update(withdrawalRef, {
+        status: "confirmed"
+      });
+    });
+
+    alert('Withdrawal confirmed!');
+
+    // Remove withdrawal element from UI
+    domElement.remove();
+
+    // If the user details panel is open for this user, update inputs
+    if (selectedUserDocId === request.userId) {
+      totalWithdrawalInput.value = Number(totalWithdrawalInput.value) + request.amount;
+      walletBalanceInput.value = Math.max(0, Number(walletBalanceInput.value) - request.amount);
+      trackChanges();
+    }
+
+    // Reload user list to refresh balances
+    await loadUsers();
+
+  } catch (error) {
+    console.error('Error confirming withdrawal:', error);
+    alert('Failed to confirm withdrawal.');
+  }
+}
+
+// Initial load
+loadUsers();
+loadWithdrawals();
+
+
+</script>
+
 </body>
 </html>
