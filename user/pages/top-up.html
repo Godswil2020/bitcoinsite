@@ -581,10 +581,10 @@
   const selectedPackage = document.getElementById('selectedPackage');
 
   const minAmounts = {
-    basic: 100,
-    silver: 300,
-    business: 500,
-    premium: 1000
+    basic: 4000,
+    silver: 7200,
+    business: 15000,
+    premium: 20000
   };
 
   if (plan && minAmounts[plan]) {
@@ -629,7 +629,7 @@
 
             const amount = parseFloat(investmentData.amount);
             const plan = investmentData.plan;
-            const minAmounts = { basic: 100, silver: 300, business: 500, premium: 1000 };
+            const minAmounts = { basic: 4000, silver: 7200, business: 15000, premium: 20000 };
 
             if (amount < minAmounts[plan]) {
                 showToast(`Minimum amount for ${plan} plan is $${minAmounts[plan]}`, 'error');
