@@ -3,259 +3,86 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Admin Panel - User & Withdrawal Management</title>
+  <title>Admin Panel - User Management</title>
   <style>
-    /* Reset */
-    * {
-      box-sizing: border-box;
-    }
-
+    /* Add minimal styles so it looks decent */
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      font-family: Arial, sans-serif;
       margin: 0;
-      display: flex;
       height: 100vh;
-      background: #f0f2f5;
-      color: #333;
     }
-
-    /* Sidebar */
     .sidebar {
-      width: 280px;
-      background-color: #2c3e50;
-      color: white;
-      padding: 1rem 1.5rem;
+      width: 250px;
+      background: #f0f0f0;
+      padding: 1rem;
       overflow-y: auto;
-      display: flex;
-      flex-direction: column;
+      border-right: 1px solid #ccc;
     }
-    .sidebar h2 {
-      margin-top: 0;
-      font-weight: 700;
-      letter-spacing: 1px;
-      font-size: 1.5rem;
-      margin-bottom: 1rem;
-      border-bottom: 1px solid #34495e;
-      padding-bottom: 0.5rem;
-    }
-    .user-list {
-      flex-grow: 1;
-    }
-    .user-list div {
-      padding: 0.7rem 1rem;
-      border-radius: 6px;
-      margin-bottom: 0.5rem;
+    .sidebar div {
       cursor: pointer;
-      background-color: #34495e;
-      transition: background-color 0.2s ease;
-      font-weight: 600;
-      font-size: 0.95rem;
-      color: #ecf0f1;
-      user-select: none;
+      padding: 0.5rem;
+      border-radius: 4px;
     }
-    .user-list div:hover {
-      background-color: #3d566e;
-    }
-    .user-list div.active {
-      background-color: #1abc9c;
+    .sidebar div.active {
+      background-color: #007bff;
       color: white;
-      font-weight: 700;
     }
-
-    /* Main content */
     .main {
-      flex-grow: 1;
-      padding: 1.5rem 2rem;
-      display: flex;
-      gap: 2rem;
+      flex: 1;
+      padding: 1rem;
       overflow-y: auto;
-    }
-
-    /* User Details */
-    .user-details {
-      background: white;
-      border-radius: 8px;
-      box-shadow: 0 2px 10px rgb(0 0 0 / 0.1);
-      padding: 1.5rem 2rem;
-      width: 45%;
-      max-width: 600px;
       display: flex;
       flex-direction: column;
+      gap: 2rem;
     }
-    .user-details h3 {
-      margin-top: 0;
-      font-weight: 700;
-      font-size: 1.6rem;
-      color: #2c3e50;
-      border-bottom: 2px solid #1abc9c;
-      padding-bottom: 0.3rem;
-      margin-bottom: 1rem;
+    .user-details {
+      display: none;
+      flex-direction: column;
+      gap: 0.5rem;
+      max-width: 600px;
     }
     .form-group {
-      margin-bottom: 1rem;
       display: flex;
       flex-direction: column;
     }
-    label {
-      font-weight: 600;
-      margin-bottom: 0.3rem;
-      color: #555;
-      user-select: none;
-    }
-    input[type="text"],
-    input[type="number"],
-    select {
-      padding: 0.45rem 0.6rem;
+    input, select, textarea {
+      padding: 0.5rem;
       font-size: 1rem;
-      border: 1.5px solid #ccc;
-      border-radius: 5px;
-      transition: border-color 0.2s ease;
-      font-weight: 500;
-      color: #2c3e50;
+      margin-top: 0.25rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
     }
-    input[type="text"]:disabled {
-      background-color: #e9ecef;
-      color: #6c757d;
-    }
-    input[type="number"]:focus,
-    input[type="text"]:focus,
-    select:focus {
-      outline: none;
-      border-color: #1abc9c;
-      box-shadow: 0 0 5px #1abc9c;
+    textarea {
+      resize: vertical;
     }
     button {
-      align-self: flex-start;
-      margin-top: 0.5rem;
-      padding: 0.6rem 1.3rem;
+      margin-top: 1rem;
+      padding: 0.5rem 1rem;
       font-size: 1rem;
-      font-weight: 700;
-      color: white;
-      background-color: #1abc9c;
       border: none;
-      border-radius: 6px;
+      border-radius: 4px;
       cursor: pointer;
-      transition: background-color 0.3s ease;
-      user-select: none;
     }
     button:disabled {
-      background-color: #7f8c8d;
+      background-color: #ccc;
       cursor: not-allowed;
     }
-    button:hover:not(:disabled) {
-      background-color: #16a085;
-    }
-
-    /* Chat Box */
     .chat-section {
-      margin-top: 1.5rem;
-      flex-grow: 1;
-      display: flex;
-      flex-direction: column;
+      border-top: 1px solid #ccc;
+      padding-top: 1rem;
+      max-width: 600px;
     }
     .chat-messages {
-      background: #ecf0f1;
-      flex-grow: 1;
-      border-radius: 8px;
-      padding: 1rem;
-      font-family: monospace;
-      font-size: 0.9rem;
+      max-height: 200px;
       overflow-y: auto;
-      white-space: pre-wrap;
-      margin-bottom: 0.5rem;
-      border: 1px solid #bdc3c7;
-      box-shadow: inset 0 0 5px rgb(0 0 0 / 0.05);
-    }
-    textarea#chatInput {
-      resize: vertical;
-      min-height: 60px;
-      max-height: 120px;
-      font-family: inherit;
-      font-size: 1rem;
+      border: 1px solid #ccc;
       padding: 0.5rem;
-      border-radius: 5px;
-      border: 1.5px solid #ccc;
       margin-bottom: 0.5rem;
-    }
-
-    /* Withdrawal Requests */
-    .withdrawals-panel {
-      width: 45%;
-      background: white;
-      border-radius: 8px;
-      box-shadow: 0 2px 10px rgb(0 0 0 / 0.1);
-      padding: 1.5rem 2rem;
       display: flex;
       flex-direction: column;
-    }
-    .withdrawals-panel h3 {
-      margin-top: 0;
-      font-weight: 700;
-      font-size: 1.6rem;
-      color: #2c3e50;
-      border-bottom: 2px solid #e74c3c;
-      padding-bottom: 0.3rem;
-      margin-bottom: 1rem;
-    }
-    .withdrawal-item {
-      border: 1px solid #ddd;
-      border-radius: 6px;
-      padding: 1rem;
-      margin-bottom: 1rem;
-      box-shadow: 0 1px 4px rgb(0 0 0 / 0.05);
+      gap: 0.3rem;
       background: #fafafa;
-    }
-    .withdrawal-header {
-      font-weight: 700;
-      margin-bottom: 0.3rem;
-      color: #e74c3c;
-    }
-    .withdrawal-info p {
-      margin: 0.2rem 0;
-      font-size: 0.95rem;
-    }
-    .withdrawal-timestamp {
-      font-size: 0.8rem;
-      color: #999;
-      margin-bottom: 0.5rem;
-    }
-    .confirm-btn {
-      padding: 0.4rem 0.9rem;
-      background-color: #e74c3c;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      font-weight: 600;
-      transition: background-color 0.3s ease;
-      user-select: none;
-    }
-    .confirm-btn:hover {
-      background-color: #c0392b;
-    }
-
-    /* Responsive */
-    @media (max-width: 900px) {
-      body {
-        flex-direction: column;
-      }
-      .sidebar {
-        width: 100%;
-        flex-direction: row;
-        overflow-x: auto;
-      }
-      .user-list div {
-        margin: 0 0.5rem 0 0;
-        white-space: nowrap;
-      }
-      .main {
-        flex-direction: column;
-        padding: 1rem;
-      }
-      .user-details, .withdrawals-panel {
-        width: 100%;
-        margin-bottom: 2rem;
-      }
     }
   </style>
 </head>
@@ -338,410 +165,122 @@
       </div>
     </div>
 
-    <div class="withdrawals-panel">
-      <h3>Withdrawal Requests</h3>
-      <div id="withdrawalList">
-        <!-- Withdrawal requests injected here -->
-      </div>
-    </div>
-
   </div>
 
-  <script>
-    // MOCK DATA - replace this with Firestore data fetching
-    const users = [
-      {
-        id: 'u1',
-        fullName: 'John Doe',
-        email: 'john.doe@email.com',
-        joinDate: 'Jan 15, 2024',
-        accountStatus: 'Confirmed',
-        accountType: 'Gold',
-        walletBalance: 5000,
-        investedAmount: 10000,
-        totalWithdrawal: 2000,
-        referralBonus: 150,
-        chats: [
-          { sender: 'user', text: 'Hello, I need help.', time: '2024-07-01 10:00' },
-          { sender: 'admin', text: 'Sure, what do you need?', time: '2024-07-01 10:01' }
-        ]
-      },
-      {
-        id: 'u2',
-        fullName: 'Jane Smith',
-        email: 'jane.smith@email.com',
-        joinDate: 'Feb 10, 2024',
-        accountStatus: 'Pending',
-        accountType: 'Silver',
-        walletBalance: 3000,
-        investedAmount: 7000,
-        totalWithdrawal: 1500,
-        referralBonus: 100,
-        chats: []
-      }
-    ];
-
-    // Mock withdrawal requests array
-    let withdrawalRequests = [
-      {
-        id: 'w1',
-        userId: 'u1',
-        amount: 500,
-        timestamp: '2024-07-01 11:30'
-      },
-      {
-        id: 'w2',
-        userId: 'u2',
-        amount: 300,
-        timestamp: '2024-07-02 09:45'
-      }
-    ];
-
-    // Elements
-    const userListEl = document.getElementById('userList');
-    const userDetailsEl = document.getElementById('userDetails');
-    const fullNameInput = document.getElementById('fullNameInput');
-    const emailInput = document.getElementById('emailInput');
-    const joinDateInput = document.getElementById('joinDateInput');
-    const accountStatusSelect = document.getElementById('accountStatusSelect');
-    const accountTypeSelect = document.getElementById('accountTypeSelect');
-    const walletBalanceInput = document.getElementById('walletBalanceInput');
-    const investedAmountInput = document.getElementById('investedAmountInput');
-    const totalWithdrawalInput = document.getElementById('totalWithdrawalInput');
-    const referralBonusInput = document.getElementById('referralBonusInput');
-    const saveUserBtn = document.getElementById('saveUserBtn');
-
-    const chatMessages = document.getElementById('chatMessages');
-    const chatInput = document.getElementById('chatInput');
-    const sendChatBtn = document.getElementById('sendChatBtn');
-
-    const withdrawalList = document.getElementById('withdrawalList');
-
-    let selectedUser = null;
-
-    // Populate user list in sidebar
-    function loadUserList() {
-      userListEl.innerHTML = '';
-      users.forEach(user => {
-        const div = document.createElement('div');
-        div.textContent = user.fullName + ' (' + user.email + ')';
-        div.dataset.userid = user.id;
-        div.addEventListener('click', () => selectUser(user, div));
-        userListEl.appendChild(div);
-      });
-    }
-
-    // Select a user to edit and chat
-    function selectUser(user, divElement) {
-      selectedUser = user;
-
-      // Highlight selected user
-      Array.from(userListEl.children).forEach(child => child.classList.remove('active'));
-      divElement.classList.add('active');
-
-      // Show user details section
-      userDetailsEl.style.display = 'flex';
-
-      // Fill user info into inputs
-      fullNameInput.value = user.fullName;
-      emailInput.value = user.email;
-      joinDateInput.value = user.joinDate;
-      accountStatusSelect.value = user.accountStatus;
-      accountTypeSelect.value = user.accountType;
-      walletBalanceInput.value = user.walletBalance;
-      investedAmountInput.value = user.investedAmount;
-      totalWithdrawalInput.value = user.totalWithdrawal;
-      referralBonusInput.value = user.referralBonus;
-
-      saveUserBtn.disabled = true;
-      sendChatBtn.disabled = false;
-
-      loadChats();
-    }
-
-    // Track changes to enable save button
-    function trackChanges() {
-      if (!selectedUser) return;
-
-      const changed =
-        fullNameInput.value.trim() !== selectedUser.fullName ||
-        accountStatusSelect.value !== selectedUser.accountStatus ||
-        accountTypeSelect.value !== selectedUser.accountType ||
-        Number(walletBalanceInput.value) !== selectedUser.walletBalance ||
-        Number(investedAmountInput.value) !== selectedUser.investedAmount ||
-        Number(totalWithdrawalInput.value) !== selectedUser.totalWithdrawal ||
-        Number(referralBonusInput.value) !== selectedUser.referralBonus;
-
-      saveUserBtn.disabled = !changed;
-    }
-
-    // Save user info (mock update)
-    saveUserBtn.addEventListener('click', () => {
-      if (!selectedUser) return;
-
-      // Validate inputs as needed
-      selectedUser.fullName = fullNameInput.value.trim();
-      selectedUser.accountStatus = accountStatusSelect.value;
-      selectedUser.accountType = accountTypeSelect.value;
-      selectedUser.walletBalance = Number(walletBalanceInput.value);
-      selectedUser.investedAmount = Number(investedAmountInput.value);
-      selectedUser.totalWithdrawal = Number(totalWithdrawalInput.value);
-      selectedUser.referralBonus = Number(referralBonusInput.value);
-
-      alert('User information updated successfully!');
-      saveUserBtn.disabled = true;
-
-      // Re-render user list to update name display
-      loadUserList();
-
-      // Keep selected user highlighted
-      const activeDiv = [...userListEl.children].find(div => div.dataset.userid === selectedUser.id);
-      if (activeDiv) activeDiv.classList.add('active');
-    });
-
-    // Add event listeners to inputs for tracking changes
-    [
-      fullNameInput,
-      accountStatusSelect,
-      accountTypeSelect,
-      walletBalanceInput,
-      investedAmountInput,
-      totalWithdrawalInput,
-      referralBonusInput
-    ].forEach(el => el.addEventListener('input', trackChanges));
-
-    // Load chat messages for selected user
-    function loadChats() {
-      chatMessages.innerHTML = '';
-      if (!selectedUser.chats || selectedUser.chats.length === 0) {
-        chatMessages.textContent = 'No chat messages yet.';
-        return;
-      }
-      selectedUser.chats.forEach(msg => {
-        const div = document.createElement('div');
-        div.style.marginBottom = '0.5rem';
-        div.style.padding = '0.4rem 0.6rem';
-        div.style.borderRadius = '5px';
-        div.style.backgroundColor = msg.sender === 'admin' ? '#d1f7d6' : '#f1f1f1';
-        div.style.alignSelf = msg.sender === 'admin' ? 'flex-end' : 'flex-start';
-        div.style.maxWidth = '80%';
-        div.textContent = `[${msg.sender === 'admin' ? 'Admin' : 'User'} - ${msg.time}] ${msg.text}`;
-        chatMessages.appendChild(div);
-      });
-      chatMessages.scrollTop = chatMessages.scrollHeight;
-    }
-
-    // Send chat message
-    sendChatBtn.addEventListener('click', () => {
-      if (!selectedUser) return;
-      const text = chatInput.value.trim();
-      if (!text) return;
-
-      const now = new Date();
-      const timeStr = now.toISOString().slice(0, 16).replace('T', ' ');
-
-      const newMsg = {
-        sender: 'admin',
-        text,
-        time: timeStr
-      };
-
-      selectedUser.chats.push(newMsg);
-      loadChats();
-      chatInput.value = '';
-
-      // Here save chat to Firestore
-    });
-
-    // Enter key sends chat too
-    chatInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        sendChatBtn.click();
-      }
-    });
-
-    // Render withdrawal requests
-    function renderWithdrawals() {
-      withdrawalList.innerHTML = '';
-      if (withdrawalRequests.length === 0) {
-        withdrawalList.textContent = 'No withdrawal requests pending.';
-        return;
-      }
-
-      withdrawalRequests.forEach(req => {
-        const user = users.find(u => u.id === req.userId);
-        if (!user) return; // User might be deleted
-
-        const div = document.createElement('div');
-        div.className = 'withdrawal-item';
-
-        div.innerHTML = `
-          <div class="withdrawal-header">Withdrawal Request</div>
-          <div class="withdrawal-info">
-            <p><strong>User:</strong> ${user.fullName}</p>
-            <p><strong>Email:</strong> ${user.email}</p>
-            <p><strong>Amount ($):</strong> ${req.amount}</p>
-            <p class="withdrawal-timestamp"><em>Requested at: ${req.timestamp}</em></p>
-          </div>
-          <button class="confirm-btn">Confirm Withdrawal</button>
-        `;
-
-        const btn = div.querySelector('button');
-        btn.addEventListener('click', () => confirmWithdrawal(req, user, div));
-
-        withdrawalList.appendChild(div);
-      });
-    }
-
-    // Confirm withdrawal function
-    function confirmWithdrawal(request, user, domElement) {
-      if (confirm(`Confirm withdrawal of $${request.amount} for ${user.fullName}?`)) {
-        // Update user total withdrawal and wallet balance accordingly
-        user.totalWithdrawal += request.amount;
-        user.walletBalance = Math.max(0, user.walletBalance - request.amount);
-
-        // Remove withdrawal request from list
-        withdrawalRequests = withdrawalRequests.filter(r => r.id !== request.id);
-
-        // Update user details UI if this user is currently selected
-        if (selectedUser && selectedUser.id === user.id) {
-          totalWithdrawalInput.value = user.totalWithdrawal;
-          walletBalanceInput.value = user.walletBalance;
-          trackChanges(); // to enable save button if needed
-        }
-
-        alert('Withdrawal confirmed!');
-
-        // Remove withdrawal item from DOM
-        domElement.remove();
-
-        // Optionally save updates to Firestore here
-
-        // Also update user list UI and save button status
-        loadUserList();
-      }
-    }
-
-    // Initialize
-    loadUserList();
-    renderWithdrawals();
-  </script>
-
   <!-- Firebase Compat Scripts -->
-<script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-firestore-compat.js"></script>
 
-<script>
-// Replace with your Firebase project config
-const firebaseConfig = {
-  apiKey: "AIzaSyDqs938UtvScxCz_p2eANLJuVbTjHZKPoI",
-  authDomain: "bitcoin-site-8b190.firebaseapp.com",
-  projectId: "bitcoin-site-8b190",
-  storageBucket: "bitcoin-site-8b190.appspot.com",
-  messagingSenderId: "548765450635",
-  appId: "1:548765450635:web:3a21f3fefefb117207ef8e",
-  measurementId: "G-CMJPS8XHF2"
-};
+  <script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyDqs938UtvScxCz_p2eANLJuVbTjHZKPoI",
+    authDomain: "bitcoin-site-8b190.firebaseapp.com",
+    projectId: "bitcoin-site-8b190",
+    storageBucket: "bitcoin-site-8b190.appspot.com",
+    messagingSenderId: "548765450635",
+    appId: "1:548765450635:web:3a21f3fefefb117207ef8e",
+    measurementId: "G-CMJPS8XHF2"
+  };
 
-// Initialize Firebase
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+  const adminEmail = "profitbitinvestment@outlook.com";
 
-const adminEmail = 'profitbitinvestment@outlook.com';
+  // Elements
+  const userListEl = document.getElementById('userList');
+  const userDetailsEl = document.getElementById('userDetails');
+  const fullNameInput = document.getElementById('fullNameInput');
+  const emailInput = document.getElementById('emailInput');
+  const joinDateInput = document.getElementById('joinDateInput');
+  const accountStatusSelect = document.getElementById('accountStatusSelect');
+  const accountTypeSelect = document.getElementById('accountTypeSelect');
+  const walletBalanceInput = document.getElementById('walletBalanceInput');
+  const investedAmountInput = document.getElementById('investedAmountInput');
+  const totalWithdrawalInput = document.getElementById('totalWithdrawalInput');
+  const referralBonusInput = document.getElementById('referralBonusInput');
+  const saveUserBtn = document.getElementById('saveUserBtn');
 
-// Load all users from Firestore and display in sidebar
-async function loadUsers() {
-  userListEl.innerHTML = 'Loading users...';
-  try {
-    const snapshot = await db.collection('users').orderBy('fullName').get();
-    userListEl.innerHTML = '';
+  const chatMessages = document.getElementById('chatMessages');
+  const chatInput = document.getElementById('chatInput');
+  const sendChatBtn = document.getElementById('sendChatBtn');
 
-    if (snapshot.empty) {
-      userListEl.textContent = 'No users found.';
-      return;
+  let selectedUser = null;
+  let users = []; // Will hold users fetched from Firestore
+  let unsubscribeChat = null;
+
+  // Fetch users from Firestore and render
+  async function fetchUsers() {
+    userListEl.innerHTML = "Loading...";
+    try {
+      const snapshot = await db.collection("users").get();
+      users = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      renderUserList(users);
+      // Removed fetchWithdrawalRequests() call here as withdrawals are removed
+    } catch (err) {
+      userListEl.innerHTML = "Failed to load users.";
+      console.error("Error fetching users:", err);
     }
+  }
 
-    snapshot.forEach(doc => {
-      const user = { id: doc.id, ...doc.data() };
-      const div = document.createElement('div');
+  // Render user list in sidebar
+  function renderUserList(users) {
+    userListEl.innerHTML = "";
+    users.forEach(user => {
+      const div = document.createElement("div");
       div.textContent = `${user.fullName} (${user.email})`;
       div.dataset.userid = user.id;
-      div.addEventListener('click', () => selectUser(user, div));
+      div.addEventListener("click", () => selectUser(user, div));
       userListEl.appendChild(div);
     });
-  } catch (error) {
-    console.error('Error loading users:', error);
-    userListEl.textContent = 'Failed to load users.';
   }
-}
 
-// When a user is selected, load their details and chats
-async function selectUser(user, divElement) {
-  selectedUser = user;
-  selectedUserDocId = user.id;
+  // Select a user for editing and chatting
+  function selectUser(user, divElement) {
+    selectedUser = user;
 
-  // Highlight selected user in sidebar
-  Array.from(userListEl.children).forEach(child => child.classList.remove('active'));
-  divElement.classList.add('active');
+    Array.from(userListEl.children).forEach(child => child.classList.remove('active'));
+    divElement.classList.add('active');
 
-  // Show user details section
-  userDetailsEl.style.display = 'flex';
+    userDetailsEl.style.display = 'flex';  // SHOW user details
 
-  // Fill user info into inputs
-  fullNameInput.value = user.fullName || '';
-  emailInput.value = user.email || '';
-  joinDateInput.value = user.joinDate || '';
-  accountStatusSelect.value = user.accountStatus || 'Confirmed';
-  accountTypeSelect.value = user.accountType || 'Basic';
-  walletBalanceInput.value = user.walletBalance ?? 0;
-  investedAmountInput.value = user.investedAmount ?? 0;
-  totalWithdrawalInput.value = user.totalWithdrawal ?? 0;
-  referralBonusInput.value = user.referralBonus ?? 0;
+    document.getElementById("userName").textContent = user.fullName || "";
+    fullNameInput.value = user.fullName || "";
+    emailInput.value = user.email || "";
+    joinDateInput.value = user.joinDate || "";
+    accountStatusSelect.value = user.accountStatus || "Confirmed";
+    accountTypeSelect.value = user.accountType || "Basic";
+    walletBalanceInput.value = user.walletBalance ?? 0;
+    investedAmountInput.value = user.investedAmount ?? 0;
+    totalWithdrawalInput.value = user.totalWithdrawal ?? 0;
+    referralBonusInput.value = user.referralBonus ?? 0;
 
-  saveUserBtn.disabled = true;
-  sendChatBtn.disabled = false;
+    saveUserBtn.disabled = true;
+    sendChatBtn.disabled = false;
 
-  // Load chats from global messages collection
-  loadChats();
-}
+    loadChat(user.email);
+  }
 
-// Enable save button if fields changed
-function trackChanges() {
-  if (!selectedUser) return;
+  // Track input changes to enable save button
+  function trackChanges() {
+    if (!selectedUser) return;
 
-  const changed =
-    fullNameInput.value.trim() !== selectedUser.fullName ||
-    accountStatusSelect.value !== selectedUser.accountStatus ||
-    accountTypeSelect.value !== selectedUser.accountType ||
-    Number(walletBalanceInput.value) !== (selectedUser.walletBalance ?? 0) ||
-    Number(investedAmountInput.value) !== (selectedUser.investedAmount ?? 0) ||
-    Number(totalWithdrawalInput.value) !== (selectedUser.totalWithdrawal ?? 0) ||
-    Number(referralBonusInput.value) !== (selectedUser.referralBonus ?? 0);
+    const changed =
+      fullNameInput.value.trim() !== selectedUser.fullName ||
+      accountStatusSelect.value !== selectedUser.accountStatus ||
+      accountTypeSelect.value !== selectedUser.accountType ||
+      Number(walletBalanceInput.value) !== selectedUser.walletBalance ||
+      Number(investedAmountInput.value) !== selectedUser.investedAmount ||
+      Number(totalWithdrawalInput.value) !== selectedUser.totalWithdrawal ||
+      Number(referralBonusInput.value) !== selectedUser.referralBonus;
 
-  saveUserBtn.disabled = !changed;
-}
+    saveUserBtn.disabled = !changed;
+  }
 
-// Save user info to Firestore
-saveUserBtn.addEventListener('click', async () => {
-  if (!selectedUserDocId) return;
+  // Save updated user info to Firestore
+  saveUserBtn.addEventListener('click', async () => {
+    if (!selectedUser) return;
 
-  try {
-    await db.collection('users').doc(selectedUserDocId).update({
-      fullName: fullNameInput.value.trim(),
-      accountStatus: accountStatusSelect.value,
-      accountType: accountTypeSelect.value,
-      walletBalance: Number(walletBalanceInput.value),
-      investedAmount: Number(investedAmountInput.value),
-      totalWithdrawal: Number(totalWithdrawalInput.value),
-      referralBonus: Number(referralBonusInput.value),
-    });
-
-    alert('User information updated successfully!');
-
-    // Update local user info so we track changes properly
-    selectedUser = {
-      ...selectedUser,
+    const updates = {
       fullName: fullNameInput.value.trim(),
       accountStatus: accountStatusSelect.value,
       accountType: accountTypeSelect.value,
@@ -751,256 +290,95 @@ saveUserBtn.addEventListener('click', async () => {
       referralBonus: Number(referralBonusInput.value),
     };
 
-    saveUserBtn.disabled = true;
-
-    // Refresh the user list to show updated name
-    await loadUsers();
-  } catch (error) {
-    console.error('Error updating user:', error);
-    alert('Failed to update user info.');
-  }
-});
-
-// Add event listeners to track input changes
-[
-  fullNameInput,
-  accountStatusSelect,
-  accountTypeSelect,
-  walletBalanceInput,
-  investedAmountInput,
-  totalWithdrawalInput,
-  referralBonusInput,
-].forEach(el => el.addEventListener('input', trackChanges));
-
-// Load chat messages from global messages collection
-async function loadChats() {
-  chatMessages.innerHTML = 'Loading chats...';
-
-  if (!selectedUser || !selectedUser.email) {
-    chatMessages.textContent = 'No user selected.';
-    return;
-  }
-
-  try {
-    const userEmail = selectedUser.email;
-
-    // Query messages where (sender == userEmail and receiver == adminEmail) OR (sender == adminEmail and receiver == userEmail)
-    const messagesRef = db.collection('messages');
-
-    const userToAdminQuery = messagesRef
-      .where('senderEmail', '==', userEmail)
-      .where('receiverEmail', '==', adminEmail);
-
-    const adminToUserQuery = messagesRef
-      .where('senderEmail', '==', adminEmail)
-      .where('receiverEmail', '==', userEmail);
-
-    // Fetch both sets
-    const [userToAdminSnap, adminToUserSnap] = await Promise.all([
-      userToAdminQuery.get(),
-      adminToUserQuery.get()
-    ]);
-
-    // Combine and sort by timestamp
-    let allMessages = [];
-
-    userToAdminSnap.forEach(doc => {
-      allMessages.push({ id: doc.id, ...doc.data() });
-    });
-    adminToUserSnap.forEach(doc => {
-      allMessages.push({ id: doc.id, ...doc.data() });
-    });
-
-    allMessages.sort((a, b) => {
-      const t1 = a.timestamp?.toDate ? a.timestamp.toDate().getTime() : 0;
-      const t2 = b.timestamp?.toDate ? b.timestamp.toDate().getTime() : 0;
-      return t1 - t2;
-    });
-
-    chatMessages.innerHTML = '';
-
-    if (allMessages.length === 0) {
-      chatMessages.textContent = 'No chat messages yet.';
-      return;
+    try {
+      await db.collection('users').doc(selectedUser.id).update(updates);
+      alert('User information updated successfully!');
+      Object.assign(selectedUser, updates);
+      fetchUsers();
+    } catch (error) {
+      alert('Failed to update user info.');
+      console.error(error);
     }
+  });
 
-    allMessages.forEach(msg => {
-      const div = document.createElement('div');
-      div.style.marginBottom = '0.5rem';
-      div.style.padding = '0.4rem 0.6rem';
-      div.style.borderRadius = '5px';
+  // Listen to inputs to track changes
+  [
+    fullNameInput,
+    accountStatusSelect,
+    accountTypeSelect,
+    walletBalanceInput,
+    investedAmountInput,
+    totalWithdrawalInput,
+    referralBonusInput
+  ].forEach(el => el.addEventListener('input', trackChanges));
 
-      const isAdmin = msg.senderEmail === adminEmail;
-      div.style.backgroundColor = isAdmin ? '#d1f7d6' : '#f1f1f1';
-      div.style.alignSelf = isAdmin ? 'flex-end' : 'flex-start';
-      div.style.maxWidth = '80%';
+  // Load chat messages for a user
+  async function loadChat(userEmail) {
+    if (unsubscribeChat) unsubscribeChat();
 
-      const timeStr = msg.timestamp && msg.timestamp.toDate
-        ? msg.timestamp.toDate().toLocaleString()
-        : '';
+    chatMessages.innerHTML = "Loading...";
 
-      div.textContent = `[${isAdmin ? 'Admin' : 'User'} - ${timeStr}] ${msg.text}`;
-      chatMessages.appendChild(div);
-    });
+    const messageRef = db
+      .collection("messages")
+      .doc(userEmail)
+      .collection("messages")
+      .orderBy("timestamp", "asc");
 
-    chatMessages.scrollTop = chatMessages.scrollHeight;
+    unsubscribeChat = messageRef.onSnapshot(snapshot => {
+      chatMessages.innerHTML = "";
 
-  } catch (error) {
-    console.error('Error loading chats:', error);
-    chatMessages.textContent = 'Failed to load chat messages.';
-  }
-}
+      if (snapshot.empty) {
+        chatMessages.textContent = "No messages yet.";
+        return;
+      }
 
-// Send a chat message as admin
-sendChatBtn.addEventListener('click', async () => {
-  if (!selectedUser || !selectedUser.email) return;
-
-  const text = chatInput.value.trim();
-  if (!text) return;
-
-  const timestamp = firebase.firestore.FieldValue.serverTimestamp();
-
-  try {
-    await db.collection('messages').add({
-      senderEmail: adminEmail,
-      receiverEmail: selectedUser.email,
-      text,
-      timestamp,
-    });
-
-    chatInput.value = '';
-    loadChats();
-  } catch (error) {
-    console.error('Error sending message:', error);
-    alert('Failed to send message.');
-  }
-});
-
-// Support sending chat by pressing Enter (shift+Enter for newline)
-chatInput.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter' && !e.shiftKey) {
-    e.preventDefault();
-    sendChatBtn.click();
-  }
-});
-
-// Load withdrawal requests from Firestore, only pending ones
-async function loadWithdrawals() {
-  withdrawalList.innerHTML = 'Loading withdrawal requests...';
-
-  try {
-    const snapshot = await db.collection('withdrawalRequests')
-      .where('status', '==', 'pending')
-      .orderBy('timestamp', 'asc')
-      .get();
-
-    withdrawalList.innerHTML = '';
-
-    if (snapshot.empty) {
-      withdrawalList.textContent = 'No withdrawal requests pending.';
-      return;
-    }
-
-    // Use Promise.all with map to await all user fetches (better than forEach with async)
-    const withdrawalElements = await Promise.all(snapshot.docs.map(async doc => {
-      const request = { id: doc.id, ...doc.data() };
-
-      // Get user info for the withdrawal request
-      const userDoc = await db.collection('users').doc(request.userId).get();
-      if (!userDoc.exists) return null;
-
-      const user = userDoc.data();
-
-      const div = document.createElement('div');
-      div.className = 'withdrawal-item';
-
-      const timestampStr = request.timestamp && request.timestamp.toDate
-        ? request.timestamp.toDate().toLocaleString()
-        : '';
-
-      div.innerHTML = `
-        <div class="withdrawal-header">Withdrawal Request</div>
-        <div class="withdrawal-info">
-          <p><strong>User:</strong> ${user.fullName}</p>
-          <p><strong>Email:</strong> ${user.email}</p>
-          <p><strong>Amount ($):</strong> ${request.amount}</p>
-          <p class="withdrawal-timestamp"><em>Requested at: ${timestampStr}</em></p>
-        </div>
-        <button class="confirm-btn">Confirm Withdrawal</button>
-      `;
-
-      const btn = div.querySelector('button');
-      btn.addEventListener('click', () => confirmWithdrawal(request, user, div));
-
-      return div;
-    }));
-
-    withdrawalElements.forEach(div => {
-      if (div) withdrawalList.appendChild(div);
-    });
-
-  } catch (error) {
-    console.error('Error loading withdrawal requests:', error);
-    withdrawalList.textContent = 'Failed to load withdrawal requests.';
-  }
-}
-
-// Confirm a withdrawal request — update status to 'confirmed'
-async function confirmWithdrawal(request, user, domElement) {
-  if (!confirm(`Confirm withdrawal of $${request.amount} for ${user.fullName}?`)) return;
-
-  try {
-    const userRef = db.collection('users').doc(request.userId);
-    const withdrawalRef = db.collection('withdrawalRequests').doc(request.id);
-
-    // Use transaction to update withdrawal safely
-    await db.runTransaction(async (transaction) => {
-      const userDoc = await transaction.get(userRef);
-      if (!userDoc.exists) throw "User does not exist!";
-
-      const userData = userDoc.data();
-
-      const newTotalWithdrawal = (userData.totalWithdrawal ?? 0) + request.amount;
-      const newWalletBalance = Math.max(0, (userData.walletBalance ?? 0) - request.amount);
-
-      transaction.update(userRef, {
-        totalWithdrawal: newTotalWithdrawal,
-        walletBalance: newWalletBalance,
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        const div = document.createElement("div");
+        div.textContent = `[${data.sender === "admin" ? "Admin" : "User"}] ${data.text}`;
+        div.style.background = data.sender === "admin" ? "#d1f7d6" : "#f1f1f1";
+        div.style.padding = "0.5rem";
+        div.style.marginBottom = "0.3rem";
+        div.style.borderRadius = "4px";
+        chatMessages.appendChild(div);
       });
 
-      // Instead of deleting, update status field to 'confirmed'
-      transaction.update(withdrawalRef, {
-        status: "confirmed"
-      });
+      chatMessages.scrollTop = chatMessages.scrollHeight;
     });
-
-    alert('Withdrawal confirmed!');
-
-    // Remove withdrawal element from UI
-    domElement.remove();
-
-    // If the user details panel is open for this user, update inputs
-    if (selectedUserDocId === request.userId) {
-      totalWithdrawalInput.value = Number(totalWithdrawalInput.value) + request.amount;
-      walletBalanceInput.value = Math.max(0, Number(walletBalanceInput.value) - request.amount);
-      trackChanges();
-    }
-
-    // Reload user list to refresh balances
-    await loadUsers();
-
-  } catch (error) {
-    console.error('Error confirming withdrawal:', error);
-    alert('Failed to confirm withdrawal.');
   }
-}
 
-// Initial load
-loadUsers();
-loadWithdrawals();
+  // Send chat message
+  sendChatBtn.addEventListener('click', async () => {
+    if (!selectedUser || !chatInput.value.trim()) return;
 
+    try {
+      await db
+        .collection("messages")
+        .doc(selectedUser.email)
+        .collection("messages")
+        .add({
+          text: chatInput.value.trim(),
+          sender: "admin",
+          fromEmail: adminEmail,
+          timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        });
 
-</script>
+      chatInput.value = "";
+    } catch (error) {
+      console.error("Failed to send message:", error);
+    }
+  });
+
+  chatInput.addEventListener("keydown", e => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      sendChatBtn.click();
+    }
+  });
+
+  // Initialize
+  window.onload = fetchUsers;
+  </script>
 
 </body>
 </html>

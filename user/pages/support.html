@@ -801,116 +801,119 @@
 
     <script src="../assets/js/script.js"></script>
     <script>
-       // Initialize Firebase and Firestore as you already did
-// const db = firebase.firestore();
+     // Cache chat elements
+  const chatMessages = document.getElementById('chatMessages');
+  const chatInput = document.getElementById('chatInput');
+
+  // Replace with your admin email
+  const adminEmail = "profitbitinvestment@outlook.com";
 
 
+  function openLiveChat() {
+    const chatOverlay = document.getElementById('chatOverlay');
+    chatOverlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
 
-// Cache chat elements
-const chatMessages = document.getElementById('chatMessages');
-const chatInput = document.getElementById('chatInput');
+    chatMessages.innerHTML = '';
+    loadMessages();
 
-function openLiveChat() {
-  const chatOverlay = document.getElementById('chatOverlay');
-  chatOverlay.classList.add('active');
-  document.body.style.overflow = 'hidden';
-
-  // Clear existing messages except welcome message
-  chatMessages.innerHTML = '';
-
-  // Load previous messages from Firestore
-  loadMessages();
-
-  // Focus input
-  setTimeout(() => {
-    chatInput.focus();
-  }, 500);
-}
-
-function closeLiveChat() {
-  const chatOverlay = document.getElementById('chatOverlay');
-  chatOverlay.classList.remove('active');
-  document.body.style.overflow = 'auto';
-
-  // Optionally remove real-time listener to save resources
-  if (unsubscribeMessages) unsubscribeMessages();
-}
-
-// Add message element helper (no simulated support response here)
-function addMessage(text, sender, time) {
-  const messageDiv = document.createElement('div');
-  messageDiv.className = `message ${sender}`;
-
-  const avatar = sender === 'user' ? userEmail.charAt(0).toUpperCase() : 'PB';
-  const messageTime = time ? new Date(time.seconds * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-  messageDiv.innerHTML = `
-    <div class="message-avatar">${avatar}</div>
-    <div>
-      <div class="message-content">${text}</div>
-      <div class="message-time">${messageTime}</div>
-    </div>
-  `;
-
-  chatMessages.appendChild(messageDiv);
-  chatMessages.scrollTop = chatMessages.scrollHeight;
-}
-
-async function sendMessage() {
-  const message = chatInput.value.trim();
-  if (!message) return;
-
-  // Save message to Firestore
-  try {
-    await db.collection('messages').add({
-      userEmail: userEmail,
-      text: message,
-      sender: 'user',
-      timestamp: firebase.firestore.FieldValue.serverTimestamp()
-    });
-  } catch (error) {
-    console.error('Error sending message:', error);
+    setTimeout(() => chatInput.focus(), 500);
   }
 
-  chatInput.value = '';
-}
+  function closeLiveChat() {
+    const chatOverlay = document.getElementById('chatOverlay');
+    chatOverlay.classList.remove('active');
+    document.body.style.overflow = 'auto';
+    if (unsubscribeMessages) unsubscribeMessages();
+  }
 
-// Real-time listener unsubscribe function
-let unsubscribeMessages = null;
+  function addMessage(text, sender, time) {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message ${sender}`;
 
-function loadMessages() {
-  // Show the welcome message first (only once)
-  addMessage("Hello! Welcome to Profit Bit Investment Support. I'm here to help you with any questions about your investments, account, or our services. How can I assist you today?", 'support');
+    const avatar = sender === 'user'
+      ? userEmail.charAt(0).toUpperCase()
+      : 'PB';
 
-  // Listen to messages for this user ordered by timestamp ascending
-  unsubscribeMessages = db.collection('messages')
-    .where('userEmail', '==', userEmail)
-    .orderBy('timestamp', 'asc')
-    .onSnapshot(snapshot => {
-      // Clear current user/support messages but keep welcome message
-      // Remove all but first message (the welcome message)
+    const messageTime = time
+      ? new Date(time.seconds * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      : new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+    messageDiv.innerHTML = `
+      <div class="message-avatar">${avatar}</div>
+      <div>
+        <div class="message-content">${text}</div>
+        <div class="message-time">${messageTime}</div>
+      </div>
+    `;
+
+    chatMessages.appendChild(messageDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }
+
+  async function sendMessage() {
+    const message = chatInput.value.trim();
+    if (!message || !userEmail) return;
+
+    try {
+      await db
+        .collection("messages")
+        .doc(userEmail)
+        .collection("messages")
+        .add({
+          text: message,
+          sender: "user",
+          fromEmail: userEmail,
+          timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+      chatInput.value = "";
+    } catch (error) {
+      console.error("Error sending message:", error);
+    }
+  }
+
+  let unsubscribeMessages = null;
+
+  function loadMessages() {
+    addMessage(
+      "Hello! Welcome to Profit Bit Investment Support. I'm here to help you with any questions about your investments, account, or our services. How can I assist you today?",
+      'support'
+    );
+
+    if (!userEmail) {
+      console.warn("No user email found.");
+      return;
+    }
+
+    const messageRef = db
+      .collection("messages")
+      .doc(userEmail)
+      .collection("messages")
+      .orderBy("timestamp", "asc");
+
+    if (unsubscribeMessages) unsubscribeMessages();
+
+    unsubscribeMessages = messageRef.onSnapshot(snapshot => {
       while (chatMessages.children.length > 1) {
         chatMessages.removeChild(chatMessages.lastChild);
       }
 
       snapshot.forEach(doc => {
         const data = doc.data();
-        // Add only messages from Firestore (skip welcome message added above)
         addMessage(data.text, data.sender, data.timestamp);
       });
     }, error => {
-      console.error('Error loading messages:', error);
+      console.error("Error loading messages:", error);
     });
-}
-
-// Send message on Enter key
-chatInput.addEventListener('keypress', function(e) {
-  if (e.key === 'Enter' && !e.shiftKey) {
-    e.preventDefault();
-    sendMessage();
   }
-});
 
+  chatInput.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  });
     </script>
     <!-- Firebase Compat Scripts -->
 <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-app-compat.js"></script>
