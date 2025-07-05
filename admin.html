@@ -5,99 +5,344 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Admin Panel - User Management</title>
   <style>
-    /* Add minimal styles so it looks decent */
+    /* Reset and base */
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
     body {
-      display: flex;
-      font-family: Arial, sans-serif;
       margin: 0;
+      font-family: Arial, sans-serif;
       height: 100vh;
+      display: flex;
+      overflow: hidden;
+      background: #fff;
     }
+
+    /* Sidebar */
     .sidebar {
-      width: 250px;
-      background: #f0f0f0;
-      padding: 1rem;
-      overflow-y: auto;
+      width: 280px;
+      background: #f9f9f9;
       border-right: 1px solid #ccc;
-    }
-    .sidebar div {
-      cursor: pointer;
-      padding: 0.5rem;
-      border-radius: 4px;
-    }
-    .sidebar div.active {
-      background-color: #007bff;
-      color: white;
-    }
-    .main {
-      flex: 1;
       padding: 1rem;
       overflow-y: auto;
+      flex-shrink: 0;
+      transition: transform 0.3s ease;
       display: flex;
       flex-direction: column;
-      gap: 2rem;
+      height: 100vh;
+      position: relative;
+      z-index: 1000;
     }
+    .sidebar h2 {
+      margin: 0 0 1rem 0;
+      font-weight: 700;
+      font-size: 1.5rem;
+      color: #333;
+      user-select: none;
+    }
+    .user-list {
+      flex-grow: 1;
+      overflow-y: auto;
+    }
+    .user-list div {
+      padding: 0.5rem 0.75rem;
+      cursor: pointer;
+      border-radius: 4px;
+      margin-bottom: 0.4rem;
+      color: #222;
+      word-break: break-word;
+      transition: background-color 0.2s ease;
+      font-size: 0.9rem;
+      line-height: 1.2;
+    }
+    .user-list div:hover {
+      background: #e2e6f9;
+    }
+    .user-list div.active {
+      background-color: #007bff;
+      color: white;
+      font-weight: bold;
+    }
+
+    /* Main Content */
+    .main {
+      flex-grow: 1;
+      overflow-y: auto;
+      padding: 1.5rem 2rem;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      background: #fff;
+      min-width: 0;
+      position: relative;
+      flex-direction: column;
+    }
+
+    /* Placeholder message when no user selected */
+    #placeholderMessage {
+      color: #555;
+      font-size: 1.1rem;
+      max-width: 600px;
+      text-align: center;
+      margin-top: 3rem;
+      user-select: none;
+    }
+
+    /* User Details Form */
     .user-details {
       display: none;
       flex-direction: column;
-      gap: 0.5rem;
+      gap: 1rem;
       max-width: 600px;
+      width: 100%;
+      background: #fefefe;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 1.5rem 2rem;
+      box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
+      overflow-y: auto;
+      max-height: 85vh;
     }
+
+    .user-details.show {
+      display: flex;
+    }
+
+    h3#userName {
+      margin-top: 0;
+      font-size: 1.75rem;
+      color: #111;
+      user-select: none;
+    }
+
     .form-group {
       display: flex;
       flex-direction: column;
+      width: 100%;
+    }
+    .form-group label {
+      font-weight: 600;
+      margin-bottom: 0.3rem;
+      color: #444;
+      user-select: none;
     }
     input, select, textarea {
-      padding: 0.5rem;
+      padding: 0.5rem 0.75rem;
       font-size: 1rem;
-      margin-top: 0.25rem;
       border: 1px solid #ccc;
       border-radius: 4px;
+      outline-offset: 2px;
+      outline-color: transparent;
+      transition: outline-color 0.15s ease;
+      font-family: inherit;
+      resize: vertical;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline-color: #007bff;
+      border-color: #007bff;
+    }
+    input[disabled] {
+      background-color: #eee;
+      color: #777;
+      cursor: not-allowed;
     }
     textarea {
-      resize: vertical;
+      min-height: 100px;
     }
     button {
       margin-top: 1rem;
-      padding: 0.5rem 1rem;
-      font-size: 1rem;
+      padding: 0.65rem 1.25rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: white;
+      background-color: #007bff;
       border: none;
-      border-radius: 4px;
+      border-radius: 6px;
       cursor: pointer;
+      align-self: flex-start;
+      transition: background-color 0.2s ease;
     }
     button:disabled {
-      background-color: #ccc;
+      background-color: #a5c4ff;
       cursor: not-allowed;
     }
+    button:hover:not(:disabled) {
+      background-color: #0056b3;
+    }
+
+    /* Chat Section */
     .chat-section {
-      border-top: 1px solid #ccc;
+      border-top: 1px solid #ddd;
       padding-top: 1rem;
-      max-width: 600px;
+      margin-top: 1.5rem;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      height: 320px; /* taller for more chat */
+    }
+    .chat-section h4 {
+      margin: 0 0 0.75rem 0;
+      user-select: none;
     }
     .chat-messages {
-      max-height: 200px;
+      flex-grow: 1;
       overflow-y: auto;
       border: 1px solid #ccc;
+      background: #fafafa;
       padding: 0.5rem;
-      margin-bottom: 0.5rem;
+      border-radius: 6px;
       display: flex;
       flex-direction: column;
       gap: 0.3rem;
-      background: #fafafa;
+      font-size: 0.9rem;
+      color: #222;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+    .chat-messages div {
+      padding: 0.3rem 0.6rem;
+      border-radius: 4px;
+    }
+    .chat-messages div.admin {
+      background: #d1f7d6;
+      align-self: flex-end;
+      color: #045d10;
+      font-weight: 600;
+      max-width: 80%;
+      word-break: break-word;
+    }
+    .chat-messages div.user {
+      background: #f1f1f1;
+      align-self: flex-start;
+      color: #444;
+      max-width: 80%;
+      word-break: break-word;
+    }
+    textarea#chatInput {
+      margin-top: 0.5rem;
+      width: 100%;
+      font-family: inherit;
+      resize: vertical;
+      min-height: 60px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      padding: 0.5rem;
+      font-size: 1rem;
+    }
+    button#sendChatBtn {
+      margin-top: 0.5rem;
+      background-color: #28a745;
+      width: 100%;
+    }
+    button#sendChatBtn:hover:not(:disabled) {
+      background-color: #1e7e34;
+    }
+
+    /* Hamburger menu toggle button */
+    #menuToggle {
+      display: none;
+      position: fixed;
+      top: 15px;
+      left: 15px;
+      width: 30px;
+      height: 25px;
+      flex-direction: column;
+      justify-content: space-between;
+      cursor: pointer;
+      z-index: 1100;
+      user-select: none;
+    }
+    #menuToggle span {
+      display: block;
+      height: 3.5px;
+      background-color: #333;
+      border-radius: 2px;
+      transition: all 0.3s ease;
+    }
+    /* Change hamburger to cross when active */
+    #menuToggle.active span:nth-child(1) {
+      transform: rotate(45deg) translate(5px, 5px);
+    }
+    #menuToggle.active span:nth-child(2) {
+      opacity: 0;
+    }
+    #menuToggle.active span:nth-child(3) {
+      transform: rotate(-45deg) translate(5px, -5px);
+    }
+
+    /* Responsive for mobile */
+    @media (max-width: 768px) {
+      body {
+        flex-direction: column;
+        height: 100vh;
+      }
+      .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        background: #f9f9f9;
+        width: 280px;
+        border-right: 1px solid #ccc;
+        padding-top: 60px; /* room for hamburger */
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+        box-shadow: 2px 0 10px rgba(0,0,0,0.15);
+      }
+      .sidebar.show {
+        transform: translateX(0);
+      }
+      .main {
+        padding: 1rem 1.5rem;
+        margin-left: 0;
+        flex-grow: 1;
+        overflow-y: auto;
+        width: 100vw;
+        align-items: center;
+      }
+      .user-details {
+        max-width: 100%;
+        padding: 1rem;
+        box-shadow: none;
+        border: none;
+        border-radius: 0;
+        max-height: none;
+        height: auto;
+      }
+      #placeholderMessage {
+        margin-top: 4rem;
+        font-size: 1.15rem;
+        max-width: 90vw;
+      }
+      #menuToggle {
+        display: flex;
+      }
     }
   </style>
 </head>
 <body>
 
-  <div class="sidebar">
+  <!-- Hamburger menu toggle -->
+  <div id="menuToggle" aria-label="Toggle user list" role="button" tabindex="0" title="Toggle user list">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+
+  <div class="sidebar" id="sidebar">
     <h2>Users</h2>
     <div class="user-list" id="userList">
-      <!-- User list injected here -->
+      <!-- User list inserted here -->
     </div>
   </div>
 
-  <div class="main">
+  <main class="main">
+    <!-- Placeholder message when no user selected -->
+    <div id="placeholderMessage">
+      Click the <strong>menu icon</strong> to select a user and manage user information.
+    </div>
 
-    <div class="user-details" id="userDetails" style="display:none;">
+    <section class="user-details" id="userDetails">
       <h3 id="userName">User Name</h3>
 
       <div class="form-group">
@@ -113,6 +358,16 @@
       <div class="form-group">
         <label for="joinDateInput">Join Date (not editable)</label>
         <input type="text" id="joinDateInput" disabled />
+      </div>
+
+      <div class="form-group">
+        <label for="phoneInput">Phone (not editable)</label>
+        <input type="text" id="phoneInput" disabled />
+      </div>
+
+      <div class="form-group">
+        <label for="countryInput">Country (not editable)</label>
+        <input type="text" id="countryInput" disabled />
       </div>
 
       <div class="form-group">
@@ -158,226 +413,248 @@
       <button id="saveUserBtn" disabled>Save User Info</button>
 
       <div class="chat-section">
-        <h4 style="margin-top: 2rem; margin-bottom: 0.5rem;">Chat with User</h4>
-        <div class="chat-messages" id="chatMessages"></div>
+        <h4>Chat with User</h4>
+        <div class="chat-messages" id="chatMessages">No messages yet.</div>
         <textarea id="chatInput" placeholder="Type a message..."></textarea>
         <button id="sendChatBtn" disabled>Send</button>
       </div>
-    </div>
-
-  </div>
+    </section>
+  </main>
 
   <!-- Firebase Compat Scripts -->
   <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-firestore-compat.js"></script>
 
   <script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyDqs938UtvScxCz_p2eANLJuVbTjHZKPoI",
-    authDomain: "bitcoin-site-8b190.firebaseapp.com",
-    projectId: "bitcoin-site-8b190",
-    storageBucket: "bitcoin-site-8b190.appspot.com",
-    messagingSenderId: "548765450635",
-    appId: "1:548765450635:web:3a21f3fefefb117207ef8e",
-    measurementId: "G-CMJPS8XHF2"
-  };
-
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
-  const adminEmail = "profitbitinvestment@outlook.com";
-
-  // Elements
-  const userListEl = document.getElementById('userList');
-  const userDetailsEl = document.getElementById('userDetails');
-  const fullNameInput = document.getElementById('fullNameInput');
-  const emailInput = document.getElementById('emailInput');
-  const joinDateInput = document.getElementById('joinDateInput');
-  const accountStatusSelect = document.getElementById('accountStatusSelect');
-  const accountTypeSelect = document.getElementById('accountTypeSelect');
-  const walletBalanceInput = document.getElementById('walletBalanceInput');
-  const investedAmountInput = document.getElementById('investedAmountInput');
-  const totalWithdrawalInput = document.getElementById('totalWithdrawalInput');
-  const referralBonusInput = document.getElementById('referralBonusInput');
-  const saveUserBtn = document.getElementById('saveUserBtn');
-
-  const chatMessages = document.getElementById('chatMessages');
-  const chatInput = document.getElementById('chatInput');
-  const sendChatBtn = document.getElementById('sendChatBtn');
-
-  let selectedUser = null;
-  let users = []; // Will hold users fetched from Firestore
-  let unsubscribeChat = null;
-
-  // Fetch users from Firestore and render
-  async function fetchUsers() {
-    userListEl.innerHTML = "Loading...";
-    try {
-      const snapshot = await db.collection("users").get();
-      users = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      renderUserList(users);
-      // Removed fetchWithdrawalRequests() call here as withdrawals are removed
-    } catch (err) {
-      userListEl.innerHTML = "Failed to load users.";
-      console.error("Error fetching users:", err);
-    }
-  }
-
-  // Render user list in sidebar
-  function renderUserList(users) {
-    userListEl.innerHTML = "";
-    users.forEach(user => {
-      const div = document.createElement("div");
-      div.textContent = `${user.fullName} (${user.email})`;
-      div.dataset.userid = user.id;
-      div.addEventListener("click", () => selectUser(user, div));
-      userListEl.appendChild(div);
-    });
-  }
-
-  // Select a user for editing and chatting
-  function selectUser(user, divElement) {
-    selectedUser = user;
-
-    Array.from(userListEl.children).forEach(child => child.classList.remove('active'));
-    divElement.classList.add('active');
-
-    userDetailsEl.style.display = 'flex';  // SHOW user details
-
-    document.getElementById("userName").textContent = user.fullName || "";
-    fullNameInput.value = user.fullName || "";
-    emailInput.value = user.email || "";
-    joinDateInput.value = user.joinDate || "";
-    accountStatusSelect.value = user.accountStatus || "Confirmed";
-    accountTypeSelect.value = user.accountType || "Basic";
-    walletBalanceInput.value = user.walletBalance ?? 0;
-    investedAmountInput.value = user.investedAmount ?? 0;
-    totalWithdrawalInput.value = user.totalWithdrawal ?? 0;
-    referralBonusInput.value = user.referralBonus ?? 0;
-
-    saveUserBtn.disabled = true;
-    sendChatBtn.disabled = false;
-
-    loadChat(user.email);
-  }
-
-  // Track input changes to enable save button
-  function trackChanges() {
-    if (!selectedUser) return;
-
-    const changed =
-      fullNameInput.value.trim() !== selectedUser.fullName ||
-      accountStatusSelect.value !== selectedUser.accountStatus ||
-      accountTypeSelect.value !== selectedUser.accountType ||
-      Number(walletBalanceInput.value) !== selectedUser.walletBalance ||
-      Number(investedAmountInput.value) !== selectedUser.investedAmount ||
-      Number(totalWithdrawalInput.value) !== selectedUser.totalWithdrawal ||
-      Number(referralBonusInput.value) !== selectedUser.referralBonus;
-
-    saveUserBtn.disabled = !changed;
-  }
-
-  // Save updated user info to Firestore
-  saveUserBtn.addEventListener('click', async () => {
-    if (!selectedUser) return;
-
-    const updates = {
-      fullName: fullNameInput.value.trim(),
-      accountStatus: accountStatusSelect.value,
-      accountType: accountTypeSelect.value,
-      walletBalance: Number(walletBalanceInput.value),
-      investedAmount: Number(investedAmountInput.value),
-      totalWithdrawal: Number(totalWithdrawalInput.value),
-      referralBonus: Number(referralBonusInput.value),
+    // Initialize Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyDqs938UtvScxCz_p2eANLJuVbTjHZKPoI",
+      authDomain: "bitcoin-site-8b190.firebaseapp.com",
+      projectId: "bitcoin-site-8b190",
+      storageBucket: "bitcoin-site-8b190.appspot.com",
+      messagingSenderId: "548765450635",
+      appId: "1:548765450635:web:3a21f3fefefb117207ef8e",
+      measurementId: "G-CMJPS8XHF2"
     };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const adminEmail = "profitbitinvestment@outlook.com";
 
-    try {
-      await db.collection('users').doc(selectedUser.id).update(updates);
-      alert('User information updated successfully!');
-      Object.assign(selectedUser, updates);
-      fetchUsers();
-    } catch (error) {
-      alert('Failed to update user info.');
-      console.error(error);
-    }
-  });
+    // Elements
+    const userListEl = document.getElementById('userList');
+    const userDetailsEl = document.getElementById('userDetails');
+    const placeholderMessage = document.getElementById('placeholderMessage');
+    const fullNameInput = document.getElementById('fullNameInput');
+    const emailInput = document.getElementById('emailInput');
+    const joinDateInput = document.getElementById('joinDateInput');
+    const phoneInput = document.getElementById('phoneInput');
+    const countryInput = document.getElementById('countryInput');
+    const accountStatusSelect = document.getElementById('accountStatusSelect');
+    const accountTypeSelect = document.getElementById('accountTypeSelect');
+    const walletBalanceInput = document.getElementById('walletBalanceInput');
+    const investedAmountInput = document.getElementById('investedAmountInput');
+    const totalWithdrawalInput = document.getElementById('totalWithdrawalInput');
+    const referralBonusInput = document.getElementById('referralBonusInput');
+    const saveUserBtn = document.getElementById('saveUserBtn');
 
-  // Listen to inputs to track changes
-  [
-    fullNameInput,
-    accountStatusSelect,
-    accountTypeSelect,
-    walletBalanceInput,
-    investedAmountInput,
-    totalWithdrawalInput,
-    referralBonusInput
-  ].forEach(el => el.addEventListener('input', trackChanges));
+    const chatMessages = document.getElementById('chatMessages');
+    const chatInput = document.getElementById('chatInput');
+    const sendChatBtn = document.getElementById('sendChatBtn');
 
-  // Load chat messages for a user
-  async function loadChat(userEmail) {
-    if (unsubscribeChat) unsubscribeChat();
+    // Sidebar and menu toggle
+    const menuToggle = document.getElementById('menuToggle');
+    const sidebar = document.getElementById('sidebar');
 
-    chatMessages.innerHTML = "Loading...";
-
-    const messageRef = db
-      .collection("messages")
-      .doc(userEmail)
-      .collection("messages")
-      .orderBy("timestamp", "asc");
-
-    unsubscribeChat = messageRef.onSnapshot(snapshot => {
-      chatMessages.innerHTML = "";
-
-      if (snapshot.empty) {
-        chatMessages.textContent = "No messages yet.";
-        return;
-      }
-
-      snapshot.forEach(doc => {
-        const data = doc.data();
-        const div = document.createElement("div");
-        div.textContent = `[${data.sender === "admin" ? "Admin" : "User"}] ${data.text}`;
-        div.style.background = data.sender === "admin" ? "#d1f7d6" : "#f1f1f1";
-        div.style.padding = "0.5rem";
-        div.style.marginBottom = "0.3rem";
-        div.style.borderRadius = "4px";
-        chatMessages.appendChild(div);
-      });
-
-      chatMessages.scrollTop = chatMessages.scrollHeight;
+    menuToggle.addEventListener('click', () => {
+      sidebar.classList.toggle('show');
+      menuToggle.classList.toggle('active');
     });
-  }
 
-  // Send chat message
-  sendChatBtn.addEventListener('click', async () => {
-    if (!selectedUser || !chatInput.value.trim()) return;
+    // State
+    let selectedUser = null;
+    let users = [];
+    let unsubscribeChat = null;
 
-    try {
-      await db
+    // Fetch users
+    async function fetchUsers() {
+      userListEl.innerHTML = "Loading...";
+      try {
+        const snapshot = await db.collection("users").get();
+        users = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        renderUserList(users);
+      } catch (err) {
+        userListEl.innerHTML = "Failed to load users.";
+        console.error("Error fetching users:", err);
+      }
+    }
+
+    // Render user list with extra info (phone, country)
+    function renderUserList(users) {
+      userListEl.innerHTML = "";
+      users.forEach(user => {
+        const div = document.createElement("div");
+        div.innerHTML = `<strong>${user.fullName}</strong><br>
+          <small>${user.email}</small><br>
+          <small>${user.phone || 'N/A'} - ${user.country || 'N/A'}</small>`;
+        div.dataset.userid = user.id;
+        div.addEventListener("click", () => selectUser(user, div));
+        userListEl.appendChild(div);
+      });
+    }
+
+    // Select a user
+    function selectUser(user, divElement) {
+      selectedUser = user;
+
+      // Highlight active user
+      Array.from(userListEl.children).forEach(child => child.classList.remove('active'));
+      divElement.classList.add('active');
+
+      // Show user details, hide placeholder
+      userDetailsEl.classList.add('show');
+      placeholderMessage.style.display = 'none';
+
+      document.getElementById("userName").textContent = user.fullName || "";
+      fullNameInput.value = user.fullName || "";
+      emailInput.value = user.email || "";
+      joinDateInput.value = user.joinDate || "";
+      phoneInput.value = user.phone || "";
+      countryInput.value = user.country || "";
+      accountStatusSelect.value = user.accountStatus || "Confirmed";
+      accountTypeSelect.value = user.accountType || "Basic";
+      walletBalanceInput.value = user.walletBalance ?? 0;
+      investedAmountInput.value = user.investedAmount ?? 0;
+      totalWithdrawalInput.value = user.totalWithdrawal ?? 0;
+      referralBonusInput.value = user.referralBonus ?? 0;
+
+      saveUserBtn.disabled = true;
+      sendChatBtn.disabled = false;
+
+      loadChat(user.email);
+
+      // On mobile, hide sidebar after selecting user
+      if(window.innerWidth <= 768) {
+        sidebar.classList.remove('show');
+        menuToggle.classList.remove('active');
+      }
+    }
+
+    // Track changes to enable save button
+    function trackChanges() {
+      if (!selectedUser) return;
+
+      const changed =
+        fullNameInput.value.trim() !== selectedUser.fullName ||
+        accountStatusSelect.value !== selectedUser.accountStatus ||
+        accountTypeSelect.value !== selectedUser.accountType ||
+        Number(walletBalanceInput.value) !== selectedUser.walletBalance ||
+        Number(investedAmountInput.value) !== selectedUser.investedAmount ||
+        Number(totalWithdrawalInput.value) !== selectedUser.totalWithdrawal ||
+        Number(referralBonusInput.value) !== selectedUser.referralBonus;
+
+      saveUserBtn.disabled = !changed;
+    }
+
+    // Save updated user info to Firestore
+    saveUserBtn.addEventListener('click', async () => {
+      if (!selectedUser) return;
+
+      const updates = {
+        fullName: fullNameInput.value.trim(),
+        accountStatus: accountStatusSelect.value,
+        accountType: accountTypeSelect.value,
+        walletBalance: Number(walletBalanceInput.value),
+        investedAmount: Number(investedAmountInput.value),
+        totalWithdrawal: Number(totalWithdrawalInput.value),
+        referralBonus: Number(referralBonusInput.value),
+      };
+
+      try {
+        await db.collection('users').doc(selectedUser.id).update(updates);
+        alert('User information updated successfully!');
+        Object.assign(selectedUser, updates);
+        fetchUsers();
+        saveUserBtn.disabled = true;
+      } catch (error) {
+        alert('Failed to update user info.');
+        console.error(error);
+      }
+    });
+
+    // Listen for changes to enable save
+    [
+      fullNameInput,
+      accountStatusSelect,
+      accountTypeSelect,
+      walletBalanceInput,
+      investedAmountInput,
+      totalWithdrawalInput,
+      referralBonusInput
+    ].forEach(el => el.addEventListener('input', trackChanges));
+
+    // Load chat messages for user
+    async function loadChat(userEmail) {
+      if (unsubscribeChat) unsubscribeChat();
+
+      chatMessages.innerHTML = "Loading...";
+
+      const messageRef = db
         .collection("messages")
-        .doc(selectedUser.email)
+        .doc(userEmail)
         .collection("messages")
-        .add({
-          text: chatInput.value.trim(),
-          sender: "admin",
-          fromEmail: adminEmail,
-          timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        .orderBy("timestamp", "asc");
+
+      unsubscribeChat = messageRef.onSnapshot(snapshot => {
+        chatMessages.innerHTML = "";
+
+        if (snapshot.empty) {
+          chatMessages.textContent = "No messages yet.";
+          return;
+        }
+
+        snapshot.forEach(doc => {
+          const data = doc.data();
+          const div = document.createElement("div");
+          div.textContent = `[${data.sender === "admin" ? "Admin" : "User"}] ${data.text}`;
+          div.className = data.sender === "admin" ? "admin" : "user";
+          chatMessages.appendChild(div);
         });
 
-      chatInput.value = "";
-    } catch (error) {
-      console.error("Failed to send message:", error);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      });
     }
-  });
 
-  chatInput.addEventListener("keydown", e => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      sendChatBtn.click();
-    }
-  });
+    // Send chat message
+    sendChatBtn.addEventListener('click', async () => {
+      if (!selectedUser || !chatInput.value.trim()) return;
 
-  // Initialize
-  window.onload = fetchUsers;
+      try {
+        await db
+          .collection("messages")
+          .doc(selectedUser.email)
+          .collection("messages")
+          .add({
+            text: chatInput.value.trim(),
+            sender: "admin",
+            fromEmail: adminEmail,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+          });
+
+        chatInput.value = "";
+      } catch (error) {
+        console.error("Failed to send message:", error);
+      }
+    });
+
+    chatInput.addEventListener("keydown", e => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        sendChatBtn.click();
+      }
+    });
+
+    // Initialize
+    window.onload = fetchUsers;
   </script>
 
 </body>
