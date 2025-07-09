@@ -462,8 +462,9 @@
                 valueElem.textContent = userData.accountType || "None";
                 break;
               case 4:
-                valueElem.textContent = `$ ${userData.withdrawalTotal || 0}`;
-                break;
+              valueElem.textContent = `$ ${userData.totalWithdrawal || 0}`;
+              break;
+
               case 5:
                 valueElem.textContent = `$ ${userData.referralBonus || 0}`;
                 break;
